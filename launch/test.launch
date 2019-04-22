@@ -35,4 +35,18 @@
     </rosparam>
   </node>
 
+  <node name="multi_plane_extraction" pkg="nodelet" type="nodelet"
+    args="load jsk_pcl/MultiPlaneExtraction $(arg manager)"
+    output="screen"
+    if="$(arg launch_manager)"
+    machine="$(arg machine)">
+    <remap from="~input" to="$(arg input)"/>
+    <remap from="~input_polygons" to="multi_plane_estimate/output_polygon"/>
+    <remap from="~input_coefficients" to="multi_plane_estimate/output_coefficuents"/>
+    <remap from="~indices" to="multi_plane_estimate/output"/>
+    <rosparam>
+      min_height: 0.01
+      max_height: 0.6
+    </rosparam>
+  </node>
 </launch>
