@@ -1,0 +1,21 @@
+
+<launch>
+  <param name="/use_sim_time" value="true"/>
+  <arg name="gui" default="true" />
+  <arg name="physics" default="ode" />
+  <arg name="KINECT1" default="$(optenv KINECT1 true)" />
+  <arg name="KINECT2" default="$(optenv KINECT2 true)" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="world_name" value="$(find pr2_send_me_a_flower)/worlds/tabletop.world" />
+    <arg name="physics" value="$(arg physics)" />
+  </include>
+
+  <include file="$(find pr2_gazebo)/launch/pr2.launch">
+    <arg name="KINECT1" value="$(arg KINECT1)" />
+    <arg name="KINECT2" value="$(arg KINECT2)" />
+  </include>
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find pr2_send_me_a_flower)/urdf/vase.urdf -urdf -x 0.8 -y 0 -z 0.8 -model vase" respawn="false" output="screen"/>
+</launch>
