@@ -31,6 +31,28 @@
     <remap from="~input" to="$(arg input)" />
   </node>
 
+  <node name="boxfilter_pre" pkg="nodelet" type="nodelet"
+    args="standalone jsk_pcl/AttentionClipper"
+    output="screen">
+    <remap from="~input/points" to="input_relay/output"/>
+    <rosparam>
+      frame_id: base_link
+      initial_pos: [1, 0.0, 1]
+      dimension_x: 2
+      dimension_y: 2
+      dimension_z: 1
+      use_multiple_attention: false
+    </rosparam>
+  </node>
+
+  <node name="ExtractIndices" pkg="nodelet" type="nodelet"
+    args="standalone jsk_pcl/ExtractIndices"
+    output="screen">
+    <remap from="~input" to="input_relay/output"/>
+    <remap from="~indices" to="boxfilter_pre/output/point_indices"/>
+  </node>
+
+
   <node name="multi_plane_estimate" pkg="nodelet" type="nodelet"
         args="load jsk_pcl/OrganizedMultiPlaneSegmentation $(arg manager)"
         output="screen"
