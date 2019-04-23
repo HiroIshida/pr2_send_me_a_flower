@@ -50,15 +50,17 @@
     output="screen">
     <remap from="~input" to="input_relay/output"/>
     <remap from="~indices" to="boxfilter_pre/output/point_indices"/>
+    <rosparam>
+      keep_organized: true
+    </rosparam>
   </node>
-
 
   <node name="multi_plane_estimate" pkg="nodelet" type="nodelet"
         args="load jsk_pcl/OrganizedMultiPlaneSegmentation $(arg manager)"
         output="screen"
         if="$(arg launch_manager)"
         machine="$(arg machine)">
-    <remap from="~input" to="input_relay/output" />
+    <remap from="~input" to="ExtractIndices/output" />
     <rosparam>
       max_curvature: 0.01
       estimate_normal: true
