@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<robot name="vase">
+  <link name="box_link">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="flower_link1">
+    <inertial>
+      <origin xyz="0.02 0.02 0.05"/>
+      <mass value="0.01"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.000001" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0.02 0.02 0.05"/>
+      <geometry>
+        <cylinder length="0.2" radius="0.005"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0.02 0.02 0.05"/>
+      <geometry>
+        <cylinder length="0.2" radius="0.005"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="flower_link2">
+    <inertial>
+      <origin xyz="-0.01 0.01 0.05"/>
+      <mass value="0.01"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.000001" />
+    </inertial>
+
+    <visual>
+      <origin xyz="-0.01 0.01 0.05"/>
+      <geometry>
+        <cylinder length="0.2" radius="0.005"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="-0.01 0.01 0.05"/>
+      <geometry>
+        <cylinder length="0.2" radius="0.005"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="flower_link3">
+    <inertial>
+      <origin xyz="0.025 -0.02 0.05"/>
+      <mass value="0.01"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.000001" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0.025 -0.02 0.05"/>
+      <geometry>
+        <cylinder length="0.2" radius="0.005"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0.025 -0.02 0.05"/>
+      <geometry>
+        <cylinder length="0.2" radius="0.005"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="fixed_joint1" type="fixed">
+    <parent link="box_link"/>
+    <child link="flower_link1"/>
+  </joint>
+
+  <joint name="fixed_joint2" type="fixed">
+    <parent link="box_link"/>
+    <child link="flower_link2"/>
+  </joint>
+
+  <joint name="fixed_joint3" type="fixed">
+    <parent link="box_link"/>
+    <child link="flower_link3"/>
+  </joint>
+
+  <gazebo reference="box_link">
+    <material>Gazebo/White</material>
+  </gazebo>
+
+  <gazebo reference="flower_link1">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+  <gazebo reference="flower_link2">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+  <gazebo reference="flower_link3">
+    <material>Gazebo/Green</material>
+  </gazebo>
+
+</robot>
