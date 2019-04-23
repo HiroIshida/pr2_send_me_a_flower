@@ -27,25 +27,25 @@
     coords-global
     ))
 
-(defun callback (bbox)
-  (let* (ik-pos
-         (coords (get-box-global-coords bbox))
-         )
-    (print "message received")
-    (setq ik-pos (send coords :pos)) 
-    (solve-ik! ik-pos) ;; somehow (solve-ik (send coords :pos)) doesn't work
-    (send *ri* :angle-vector (send *robot* :angle-vector) 8000)
-    (send *ri* :wait-interpolation)
-    (send *ri* :start-grasp :larm)
-    (send *robot* :larm :move-end-pos #f(-300 0 0) :local)
-    (send *ri* :angle-vector (send *robot* :angle-vector) 8000)
-    ))
-
-(defun solve-ik-pos! (robot pos-reach)
+(defun solve-ik-pos! (robot pos-reach 
+                            &key
+                            (which-arm :larm)
+                            (rotation-axis nil)
+                            )
   (send robot :inverse-kinematics (make-coords :pos pos-reach)
-        :link-list (send robot :link-list (send robot :larm :end-coords :parent))
-        :move-target (send robot :larm :end-coords)
-        :rotation-axis nil))
+        :link-list (send robot :link-list (send robot which-arm :end-coords :parent))
+        :move-target (send robot which-arm :end-coords)
+        :rotation-axis rotation-axis))
+
+(defun solve-ik! (robot pos rpy 
+                            &key
+                            (which-arm :larm)
+                            (rotation-axis nil)
+                            )
+  (send robot :inverse-kinematics (make-coords :pos pos :rpy rpy)
+        :link-list (send robot :link-list (send robot which-arm :end-coords :parent))
+        :move-target (send robot which-arm :end-coords)
+        :rotation-axis rotation-axis))
 
 (defun compute-pos-boxtop (bbox)
   (let* (
@@ -55,17 +55,16 @@
     pos-boxtop
     ))
 
-
-(setq msg-box (elt (send *msg* :boxes) 0))
-(solve-ik-pos! *robot* (compute-pos-boxtop msg-box))
-
-
-
 (defun show (robot)
   (objects (list robot)))
 
+
+(print "install loading")
 (robot-init!)
 (send *ri* :angle-vector (send *robot* :angle-vector) 5000)
-(print "install loading")
 (setq *msg*
       (one-shot-subscribe "/vase_detection/boxes" jsk_recognition_msgs::BoundingBoxArray :after-stamp (ros::time)))
+(setq msg-box (elt (send *msg* :boxes) 0))
+(solve-ik! *robot* (compute-pos-boxtop msg-box) #f(0 1.3 0) :rotation-axis t)
+(show *robot*)
+;(send *ri* :angle-vector (send *robot* :angle-vector) 5000)
