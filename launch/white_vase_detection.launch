@@ -21,12 +21,14 @@
   <machine name="localhost" address="localhost" />
 
   <!-- tabletop object detection -->
+  <group ns="vase_detection">
+
   <node name="$(arg manager)" pkg="nodelet" type="nodelet" args="manager"
         machine="$(arg machine)" if="$(arg launch_manager)"
         output="screen" />
 
   <node name="input_relay" pkg="nodelet" type="nodelet"
-        args="load jsk_topic_tools/Relay $(arg manager)"
+        args="standalone jsk_topic_tools/Relay"
         machine="$(arg machine)">
     <remap from="~input" to="$(arg input)" />
   </node>
@@ -117,5 +119,6 @@
     <rosparam>
     </rosparam>
   </node>
+  </group>
 
 </launch>
