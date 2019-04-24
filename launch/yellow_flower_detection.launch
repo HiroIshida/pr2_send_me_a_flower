@@ -8,13 +8,19 @@
   <arg name="launch_openni" default="true" />
   <arg name="launch_rviz" default="true" />
   <arg name="publish_tf" default="true" />
+  
+  <arg name="frame" default="camera_rgb_optical_frame"/>
 
-  <arg name="h_max" default="45" />
-  <arg name="h_min" default="8" />
+  <!-- parameter for hsi filter -->
+  <arg name="h_max" default="8" />
+  <arg name="h_min" default="-128" />
   <arg name="s_max" default="255" />
-  <arg name="s_min" default="0" />
+  <arg name="s_min" default="45" />
   <arg name="i_max" default="255" />
   <arg name="i_min" default="0" />
+
+  <!-- parameter for euclidean clustering -->
+  <arg name="clustering_tolerance" default="0.01"/>
 
 
   <machine name="localhost" address="localhost" />
@@ -37,7 +43,7 @@
     output="screen">
     <remap from="~input/points" to="input_relay/output"/>
     <rosparam>
-      frame_id: base_link
+      frame_id: camera_rgb_optical_frame
       initial_pos: [1, 0.0, 1]
       dimension_x: 2
       dimension_y: 2
@@ -103,8 +109,9 @@
     <remap from="~input" to="hsi_filter/output" />
     <rosparam>
       tolerance: 0.02
-      min_size: 100
+      min_size: 50
     </rosparam>
+    <param name="tolerance" value="$(arg clustering_tolerance)"/>
   </node>
 
   <node pkg="nodelet" type="nodelet"
