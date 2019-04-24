@@ -3,7 +3,15 @@
   <arg name="machine" default="localhost" />
   <arg name="launch_manager" default="true" />
 
+  <!-- parameter-->
   <arg name="pr2" default="false"/>
+  <arg name="debug" default="false"/>
+
+  <!-- nodelet or standalone -->
+  <arg name="nodelet_arg1" default="standalone" if="$(arg debug)"/>
+  <arg name="nodelet_arg1" default="load" unless="$(arg debug)"/>
+  <arg name="nodelet_arg2" default="" if="$(arg debug)"/>
+  <arg name="nodelet_arg2" default="$(arg manager)" unless="$(arg debug)"/>
 
   <!-- change input topic name -->
   <arg name="input" default="/kinect_head/depth_registered/points" if="$(arg pr2)"/>
@@ -43,13 +51,13 @@
         output="screen" />
 
   <node name="input_relay" pkg="nodelet" type="nodelet"
-        args="load jsk_topic_tools/Relay $(arg manager)"
+        args="$(arg nodelet_arg1) jsk_topic_tools/Relay $(arg nodelet_arg2)"
         machine="$(arg machine)">
     <remap from="~input" to="$(arg input)" />
   </node>
 
   <node name="boxfilter_pre" pkg="nodelet" type="nodelet"
-    args="load jsk_pcl/AttentionClipper $(arg manager)"
+    args="$(arg nodelet_arg1) jsk_pcl/AttentionClipper $(arg nodelet_arg2)"
     output="screen">
     <remap from="~input/points" to="input_relay/output"/>
     <rosparam>
@@ -63,7 +71,7 @@
   </node>
 
   <node name="ExtractIndices" pkg="nodelet" type="nodelet"
-    args="load jsk_pcl/ExtractIndices $(arg manager)"
+    args="$(arg nodelet_arg1) jsk_pcl/ExtractIndices $(arg nodelet_arg2)"
     output="screen">
     <remap from="~input" to="input_relay/output"/>
     <remap from="~indices" to="boxfilter_pre/output/point_indices"/>
@@ -73,7 +81,7 @@
   </node>
 
   <node name="multi_plane_estimate" pkg="nodelet" type="nodelet"
-        args="load jsk_pcl/OrganizedMultiPlaneSegmentation $(arg manager)"
+        args="$(arg nodelet_arg1) jsk_pcl/OrganizedMultiPlaneSegmentation $(arg nodelet_arg2)"
         output="screen"
         if="$(arg launch_manager)"
         machine="$(arg machine)">
@@ -85,7 +93,7 @@
   </node>
 
   <node name="multi_plane_extraction" pkg="nodelet" type="nodelet"
-    args="load jsk_pcl/MultiPlaneExtraction $(arg manager)"
+    args="$(arg nodelet_arg1) jsk_pcl/MultiPlaneExtraction $(arg nodelet_arg2)"
     output="screen"
     if="$(arg launch_manager)"
     machine="$(arg machine)">
@@ -100,7 +108,7 @@
   </node>
 
   <node name="hsi_filter" pkg="nodelet" type="nodelet"
-        args="load jsk_pcl/HSIColorFilter $(arg manager)" output="screen">
+        args="$(arg nodelet_arg1) jsk_pcl/HSIColorFilter $(arg nodelet_arg2)" output="screen">
     <remap from="~input" to="multi_plane_extraction/output" />
     <rosparam>
       use_indices: false
@@ -115,7 +123,7 @@
   </node>
 
   <node pkg="nodelet" type="nodelet" name="euclidean_clustering"
-        args="load jsk_pcl/EuclideanClustering $(arg manager)" output="screen">
+        args="$(arg nodelet_arg1) jsk_pcl/EuclideanClustering $(arg nodelet_arg2)" output="screen">
     <remap from="~input" to="hsi_filter/output" />
     <rosparam>
       tolerance: 0.02
@@ -126,7 +134,7 @@
 
   <node pkg="nodelet" type="nodelet"
         name="cluster_decomposer"
-        args="load jsk_pcl/ClusterPointIndicesDecomposerZAxis $(arg manager)"
+        args="$(arg nodelet_arg1) jsk_pcl/ClusterPointIndicesDecomposerZAxis $(arg nodelet_arg2)"
         output="screen" clear_params="true">
     <remap from="~input" to="hsi_filter/output" />
     <remap from="~target" to="euclidean_clustering/output" />
