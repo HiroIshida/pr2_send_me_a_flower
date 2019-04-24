@@ -9,7 +9,8 @@
   <arg name="launch_rviz" default="true" />
   <arg name="publish_tf" default="true" />
   
-  <arg name="frame" default="camera_rgb_optical_frame"/>
+  <!-- parameter for box filter -->
+  <arg name="box_filter_frame" default="base_link"/>
 
   <!-- parameter for hsi filter -->
   <arg name="h_max" default="8" />
@@ -43,13 +44,13 @@
     output="screen">
     <remap from="~input/points" to="input_relay/output"/>
     <rosparam>
-      frame_id: camera_rgb_optical_frame
       initial_pos: [1, 0.0, 1]
       dimension_x: 2
-      dimension_y: 2
+      dimension_y: 1
       dimension_z: 1
       use_multiple_attention: false
     </rosparam>
+    <param name="frame_id" value="$(arg box_filter_frame)" />
   </node>
 
   <node name="ExtractIndices" pkg="nodelet" type="nodelet"
@@ -125,6 +126,12 @@
     <rosparam>
     </rosparam>
   </node>
+
+  <node pkg="jsk_interactive_marker" type="bounding_box_marker"
+        name="bounding_box_marker">
+    <remap from="~bounding_box_array" to="boxes" />
+  </node>
+
   </group>
 
 </launch>
