@@ -1,6 +1,5 @@
 <launch>
   <arg name="input" default="/kinect_head/depth_registered/points" />
-  <arg name="sensor_frame" default="/head_mount_kinect_rgb_optical_frame" />
   <arg name="manager" default="tabletop_object_detector_nodelet_manager" />
   <arg name="machine" default="localhost" />
 
@@ -10,9 +9,9 @@
   <arg name="launch_rviz" default="true" />
   <arg name="publish_tf" default="true" />
 
-  <arg name="h_max" default="16" />
-  <arg name="h_min" default="-128" />
-  <arg name="s_max" default="95" />
+  <arg name="h_max" default="45" />
+  <arg name="h_min" default="8" />
+  <arg name="s_max" default="255" />
   <arg name="s_min" default="0" />
   <arg name="i_max" default="255" />
   <arg name="i_min" default="0" />
