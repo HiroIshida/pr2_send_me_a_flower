@@ -59,14 +59,40 @@
 
 ; (ex) name-topic "/vase_detection/boxes"
 ; (ex) "/vase_detection/bounding_box_marker/selected_box"
+(print "start getting msg")
 (defun get-msg (name-topic type-topic)
   (let (msg)
-    (setq msg (one-shot-subscribe name-topic type-topic :after-stamp (ros::time)))
+    (setq msg (one-shot-subscribe name-topic type-topic :after-stamp (ros::time) :timeout 100000))
+    (print "received message")
     msg
     ))
 
-;(get-msg "/vase_detection/bounding_box_marker/selected_box"
-         ;jsk_recognition_msgs::BoundingBox)
+;(setq *msg* (get-msg "/vase_detection/bounding_box_marker/selected_box" jsk_recognition_msgs::BoundingBox))
+
+(defun get-flower-position ()
+  (let* (
+         (msg-box (get-msg "/vase_detection/bounding_box_marker/selected_box" jsk_recognition_msgs::BoundingBox))
+         (coords-box (get-box-global-coords msg-box))
+         (pos-box (send coords-box :pos))
+         )
+    pos-box
+    ))
+
+(setq *flower-position* (get-flower-position))
+(defun guide-larm ()
+  (let* (
+         (pos-flower (get-flower-position))
+         (pos-flower-grasp (v+ pos-flower #f(0 0 -0.1)))
+         )
+    pos-flower-grasp
+    ))
+
+
+
+
+
+
+
 
 ;(setq msg-box (elt (send *msg* :boxes) 0))
 ;(solve-ik! *robot* (compute-pos-boxtop msg-box) #f(0 1.3 0) :rotation-axis t)
