@@ -4,7 +4,7 @@
   <arg name="launch_manager" default="true" />
 
   <!-- parameter-->
-  <arg name="pr2" default="false"/>
+  <arg name="pr2" default="true"/>
   <arg name="debug" default="false"/>
 
   <!-- nodelet or standalone -->
@@ -20,8 +20,8 @@
   <!-- parameter for box filter -->
   <arg name="box_filter_frame" default="base_link" if="$(arg pr2)"/>
   <arg name="box_fileter_dimension_x" default="2" if="$(arg pr2)"/>
-  <arg name="box_fileter_dimension_y" default="1" if="$(arg pr2)"/>
-  <arg name="box_fileter_dimension_z" default="1" if="$(arg pr2)"/>
+  <arg name="box_fileter_dimension_y" default="2" if="$(arg pr2)"/>
+  <arg name="box_fileter_dimension_z" default="2" if="$(arg pr2)"/>
   <arg name="box_fileter_initial_pos" default="[1 0.0 1]" if="$(arg pr2)"/>
 
   <arg name="box_filter_frame" default="camera_rgb_frame" unless="$(arg pr2)"/>
