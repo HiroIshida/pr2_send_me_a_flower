@@ -1,4 +1,5 @@
 #!/usr/bin/env roseus
+(load "package://pr2eus_moveit/euslisp/pr2eus-moveit.l")
 (require "package://pr2eus/pr2-interface.l")
 (require "models/arrow-object.l")
 
@@ -10,6 +11,7 @@
 (pr2-init)
 (print "robot initialized")
 (setq *tfl* (instance ros::transform-listener :init))
+(setq *co* (instance collision-object-publisher :init))
 (setq *robot* *pr2*)
 
 (defun robot-init! ()
