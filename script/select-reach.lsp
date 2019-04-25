@@ -20,7 +20,7 @@
     (send *robot* :r_shoulder_lift_joint :joint-angle -20)
     (send *robot* :l_upper_arm_roll_joint :joint-angle 40)
     (send *robot* :r_upper_arm_roll_joint :joint-angle -40)
-    (send *robot* :torso_lift_joint :joint-angle 20)
+    (send *robot* :torso_lift_joint :joint-angle 100)
     )
 
 (defun get-box-global-coords (bbox)
@@ -36,7 +36,7 @@
 (defun solve-ik! (robot pos rpy 
                             &key
                             (which-arm :larm)
-                            (rotation-axis nil)
+                            (rotation-axis t)
                             )
   (send robot :inverse-kinematics (make-coords :pos pos :rpy rpy)
         :link-list (send robot :link-list (send robot which-arm :end-coords :parent))
@@ -78,14 +78,17 @@
     pos-box
     ))
 
-(setq *flower-position* (get-flower-position))
+;(setq *flower-position* (get-flower-position 2))
 (defun guide-larm ()
   (let* (
          (pos-flower (get-flower-position))
-         (pos-flower-grasp (v+ pos-flower #f(0 0 -0.1)))
+         (pos-flower-grasp (v+ pos-flower #f(0 0 -80)))
          )
-    pos-flower-grasp
+    (setq *pos-grasp* pos-flower-grasp)
+    (solve-ik! *robot* (v+ *pos-grasp* #f(0 80 0)) #f(0 0 0) :rotation-axis t)
     ))
+
+(send *ri* :stop-grasp :larm)
 
 
 
