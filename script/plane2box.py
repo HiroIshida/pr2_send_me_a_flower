@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+from std_msgs.msg import Header
 from jsk_recognition_msgs.msg import PolygonArray
 from jsk_recognition_msgs.msg import BoundingBoxArray
 from jsk_recognition_msgs.msg import BoundingBox
@@ -19,9 +20,9 @@ def polygon2pointcloud(polygon, header):
     pc_polygon.header = header
     return pc_polygon
 
-def polygon2box(polygon, header_pre):
+def polygon2box(polygon, header_pre, header_new):
     pc_polygon_source = polygon2pointcloud(polygon, header_pre)
-    pc_polygon_target = tf_listerner.transformPointCloud('/base_link', pc_polygon_source)
+    pc_polygon_target = tf_listerner.transformPointCloud(header_new.frame_id, pc_polygon_source)
     pts = pc_polygon_target.points
     n_pts = len(pts)
 
@@ -45,7 +46,7 @@ def polygon2box(polygon, header_pre):
     bbox.dimensions.x = (x_max - x_min)*scaler
     bbox.dimensions.y = (y_max - y_min)*scaler
     bbox.dimensions.z = (z_max - z_min)*scaler
-    bbox.header = header_pre
+    bbox.header = header_new
     return bbox
 
 pub = rospy.Publisher('/plane2box/output', BoundingBoxArray)
@@ -53,13 +54,12 @@ pub = rospy.Publisher('/plane2box/output', BoundingBoxArray)
 def callback(msg):
     polygons = msg.polygons
     header_pre = msg.header
-    header_new = header_pre #maybe copy is required
-    header_new.frame_id = '/base_link'
+    header_new = Header(stamp = header_pre.stamp, frame_id = '/base_link')
 
     boxes = []
     for polystump in polygons:
         polygon = polystump.polygon
-        bbox = polygon2box(polygon, header_new)
+        bbox = polygon2box(polygon, header_pre, header_new)
         boxes.append(bbox)
     bbox_array = BoundingBoxArray()
     bbox_array.boxes = boxes
