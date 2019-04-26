@@ -148,7 +148,8 @@
         name="bounding_box_marker">
     <remap from="~bounding_box_array" to="boxes" />
   </node>
-
   </group>
+
+  <node pkg="pr2_send_me_a_flower" type="plane2box.py" name="plane2box" output="screen"/>
 
 </launch>

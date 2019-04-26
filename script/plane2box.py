@@ -49,7 +49,7 @@ def polygon2box(polygon, header_pre, header_new):
     bbox.header = header_new
     return bbox
 
-pub = rospy.Publisher('/plane2box/output', BoundingBoxArray)
+pub = rospy.Publisher('/plane2box/output', BoundingBoxArray, queue_size=1)
 
 def callback(msg):
     polygons = msg.polygons
