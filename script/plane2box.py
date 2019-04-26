@@ -3,6 +3,8 @@ import rospy
 from jsk_recognition_msgs.msg import PolygonArray
 from jsk_recognition_msgs.msg import BoundingBoxArray
 from jsk_recognition_msgs.msg import BoundingBox
+from sensor_msgs.msg import PointCloud
+
 import tf
 import numpy as np
 from numpy.linalg import inv
@@ -11,36 +13,21 @@ scaler = 1
 rospy.init_node("make_collision_cubes")
 tf_listerner = tf.TransformListener()
 
-def quaternion2matrix(q):
-    q1 = q[0]
-    q2 = q[1]
-    q3 = q[2]
-    q4 = q[3]
-    mat = np.matrix([
-        [q1**2-q2**2-q3**2+q4**2, 2*(q1*q2+q3*q4), 2*(q3*q1-q2*q4)],
-        [2*(q1*q2-q3*q4), q2**2-q3**2-q1**2+q4**2, 2*(q2*q3+q1*q4)],
-        [2*(q3*q1+q2*q4), 2*(q2*q3-q1*q4), q3**2-q1**2-q2**2+q4**2]
-        ])
-    return mat
+def polygon2pointcloud(polygon, header):
+    pc_polygon = PointCloud()
+    pc_polygon.points = polygon.points
+    pc_polygon.header = header
+    return pc_polygon
 
-
-
-
-
-
-def polygon2box(polygon, header, trans, rot):
-    pts_ = polygon.points
-    pts = []
-    for pt_ in pts_:
-        M_rot = inv(quaternion2matrix(rot))
-        pt_np_ = np.array([pt_.x, pt_.y, pt_.z]) 
-        pt = M_rot.dot(pt_np_).A1 + np.array(trans)
-        pts.append(pt)
+def polygon2box(polygon, header_pre):
+    pc_polygon_source = polygon2pointcloud(polygon, header_pre)
+    pc_polygon_target = tf_listerner.transformPointCloud('/base_link', pc_polygon_source)
+    pts = pc_polygon_target.points
     n_pts = len(pts)
 
-    x_lst = [pt[0] for pt in pts]
-    y_lst = [pt[1] for pt in pts]
-    z_lst = [pt[2] for pt in pts]
+    x_lst = [pt.x for pt in pts]
+    y_lst = [pt.y for pt in pts]
+    z_lst = [pt.z for pt in pts]
 
     x_min = min(x_lst)
     x_max = max(x_lst)
@@ -58,28 +45,29 @@ def polygon2box(polygon, header, trans, rot):
     bbox.dimensions.x = (x_max - x_min)*scaler
     bbox.dimensions.y = (y_max - y_min)*scaler
     bbox.dimensions.z = (z_max - z_min)*scaler
-    bbox.header = header
+    bbox.header = header_pre
     return bbox
 
 pub = rospy.Publisher('/plane2box/output', BoundingBoxArray)
 
 def callback(msg):
     polygons = msg.polygons
-    header = msg.header
-    (trans, rot) = tf_listerner.lookupTransform(msg.header.frame_id, '/base_link', rospy.Time(0))
-    #header.frame_id = "/base_link"
+    header_pre = msg.header
+    header_new = header_pre #maybe copy is required
+    header_new.frame_id = '/base_link'
 
     boxes = []
     for polystump in polygons:
         polygon = polystump.polygon
-        bbox = polygon2box(polygon, header, trans, rot)
+        bbox = polygon2box(polygon, header_new)
         boxes.append(bbox)
     bbox_array = BoundingBoxArray()
     bbox_array.boxes = boxes
-    bbox_array.header = header
+    bbox_array.header = header_new
     pub.publish(bbox_array)
     print "published"
 
 sub = rospy.Subscriber('/vase_detection/multi_plane_estimate/output_polygon', PolygonArray, callback)
 print "node start"
 rospy.spin()
+
