@@ -28,7 +28,7 @@
 (defun callback-collision-adder (box-msg)
   (let ((cube (box->cube box-msg)))
     (print "received")
-    (send *co* :add-object cube :frame-id "base_footprint"
+    (send *co* :add-object cube :frame-id "base_link"
                :relative-pose (send cube :copy-worldcoords)
                :object-id "cube")))
  
