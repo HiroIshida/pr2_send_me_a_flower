@@ -56,10 +56,14 @@
 (defun show (robot)
   (objects (list robot)))
 
-(defun transmit-posture ()
-  (send *ri* :angle-vector (send *robot* :angle-vector) 5000))
-(defun transmit-moveit-posture ()
-  (send *ri* :angle-vector-motion-plan (send *robot* :angle-vector)))
+
+(defun transmit-posture (&optional (force? nil))
+  (if force?
+      (send *ri* :angle-vector (send *robot* :angle-vector) 5000)
+      (send *ri* :angle-vector-motion-plan (send *robot* :angle-vector))
+      )
+  (send *ri* :wait-interpolation)
+  )
 
 (defun fuck ()
   (robot-init!)
@@ -98,7 +102,13 @@
 ;(guide-larm)
 
 (robot-init!)
+(transmit-posture t)
+(send *ri* :stop-grasp)
+(guide-larm) 
 (transmit-posture)
 (send *robot* :larm :move-end-pos #f(0 -50 0) :world)
+(transmit-posture t)
 (send *ri* :start-grasp :larm)
-(send *robot* :larm :move-end-pos #f(0 0 100) :world)
+(send *robot* :larm :move-end-pos #f(0 0 400) :world)
+(transmit-posture t)
+(send *ri* :stop-grasp)
