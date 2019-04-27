@@ -1,14 +1,14 @@
 #!/usr/bin/env roseus
+(load "package://pr2eus/pr2-interface.l")
 (load "package://pr2eus_moveit/euslisp/pr2eus-moveit.l")
-(require "package://pr2eus/pr2-interface.l")
-(require "models/arrow-object.l")
+(pr2-init)
+(send *ri* :set-moveit-environment (instance pr2-moveit-environment :init))
 
-(ros::roseus "reaching")
+;(ros::roseus "reaching")
 (ros::load-ros-manifest "jsk_recognition_msgs")
 (ros::load-ros-manifest "roseus")
 (print "finish loading")
 
-(pr2-init)
 (print "robot initialized")
 (setq *tfl* (instance ros::transform-listener :init))
 (setq *co* (instance collision-object-publisher :init))
@@ -58,18 +58,23 @@
 
 (defun transmit-posture ()
   (send *ri* :angle-vector (send *robot* :angle-vector) 5000))
+(defun transmit-moveit-posture ()
+  (send *ri* :angle-vector-motion-plan (send *robot* :angle-vector)))
+
+(defun fuck ()
+  (robot-init!)
+  (transmit-moveit-posture))
 
 ; (ex) name-topic "/vase_detection/boxes"
 ; (ex) "/vase_detection/bounding_box_marker/selected_box"
 (print "start getting msg")
 (defun get-msg (name-topic type-topic)
   (let (msg)
-    (setq msg (one-shot-subscribe name-topic type-topic :after-stamp (ros::time) :timeout 100000))
+    (print "waiting ...")
+    (setq msg (one-shot-subscribe name-topic type-topic :after-stamp (ros::time) :timeout 1000000))
     (print "received message")
     msg
     ))
-
-;(setq *msg* (get-msg "/vase_detection/bounding_box_marker/selected_box" jsk_recognition_msgs::BoundingBox))
 
 (defun get-flower-position ()
   (let* (
@@ -84,22 +89,16 @@
 (defun guide-larm ()
   (let* (
          (pos-flower (get-flower-position))
-         (pos-flower-grasp (v+ pos-flower #f(0 0 -80)))
+         (pos-flower-grasp (v+ pos-flower #f(0 0 -30)))
          )
     (setq *pos-grasp* pos-flower-grasp)
-    (solve-ik! *robot* (v+ *pos-grasp* #f(0 80 0)) #f(0 0 0) :rotation-axis t)
+    (solve-ik! *robot* (v+ *pos-grasp* #f(0 50 0)) #f(-1.57 0 0) :rotation-axis t)
+    (show *robot*)
     ))
+;(guide-larm)
 
-(send *ri* :stop-grasp :larm)
-
-
-
-
-
-
-
-
-;(setq msg-box (elt (send *msg* :boxes) 0))
-;(solve-ik! *robot* (compute-pos-boxtop msg-box) #f(0 1.3 0) :rotation-axis t)
-;(show *robot*)
-;(send *ri* :angle-vector (send *robot* :angle-vector) 5000)
+(robot-init!)
+(transmit-posture)
+(send *robot* :larm :move-end-pos #f(0 -50 0) :world)
+(send *ri* :start-grasp :larm)
+(send *robot* :larm :move-end-pos #f(0 0 100) :world)
