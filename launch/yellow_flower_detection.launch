@@ -146,5 +146,6 @@
   </group>
 
   <node pkg="pr2_send_me_a_flower" type="plane2box.py" name="plane2box" output="screen"/>
+  <node pkg="pr2_send_me_a_flower" type="pickup_highest_box.py" name="pickup_highest_box" output="screen"/>
 
 </launch>
