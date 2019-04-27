@@ -41,6 +41,12 @@
   <arg name="clustering_tolerance" default="0.01"/>
 
 
+  <!-- launch rviz -->
+  <node name="pr2_send_me_a_flower_rviz" pkg="rviz" type="rviz"
+    args="-d $(find pr2_send_me_a_flower)/config/pr2_moveit.rviz"/>
+  <!-- launch moveit -->
+  <include file="$(find pr2_moveit_config)/launch/move_group.launch"/>
+
   <!-- tabletop object detection -->
   <group ns="vase_detection">
 
