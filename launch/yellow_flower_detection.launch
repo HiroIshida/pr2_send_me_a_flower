@@ -1,6 +1,5 @@
 <launch>
   <arg name="manager" default="tabletop_object_detector_nodelet_manager" />
-  <arg name="machine" default="localhost" />
   <arg name="launch_manager" default="true" />
 
   <!-- parameter-->
@@ -41,18 +40,16 @@
   <!-- parameter for euclidean clustering -->
   <arg name="clustering_tolerance" default="0.01"/>
 
-  <machine name="localhost" address="localhost" />
 
   <!-- tabletop object detection -->
   <group ns="vase_detection">
 
   <node name="$(arg manager)" pkg="nodelet" type="nodelet" args="manager"
-        machine="$(arg machine)" if="$(arg launch_manager)"
+        if="$(arg launch_manager)"
         output="screen" />
 
   <node name="input_relay" pkg="nodelet" type="nodelet"
-        args="$(arg nodelet_arg1) jsk_topic_tools/Relay $(arg nodelet_arg2)"
-        machine="$(arg machine)">
+    args="$(arg nodelet_arg1) jsk_topic_tools/Relay $(arg nodelet_arg2)">
     <remap from="~input" to="$(arg input)" />
   </node>
 
@@ -83,8 +80,7 @@
   <node name="multi_plane_estimate" pkg="nodelet" type="nodelet"
         args="$(arg nodelet_arg1) jsk_pcl/OrganizedMultiPlaneSegmentation $(arg nodelet_arg2)"
         output="screen"
-        if="$(arg launch_manager)"
-        machine="$(arg machine)">
+        if="$(arg launch_manager)">
     <remap from="~input" to="ExtractIndices/output" />
     <rosparam>
       max_curvature: 0.01
@@ -95,8 +91,7 @@
   <node name="multi_plane_extraction" pkg="nodelet" type="nodelet"
     args="$(arg nodelet_arg1) jsk_pcl/MultiPlaneExtraction $(arg nodelet_arg2)"
     output="screen"
-    if="$(arg launch_manager)"
-    machine="$(arg machine)">
+    if="$(arg launch_manager)">
     <remap from="~input" to="ExtractIndices/output"/>
     <remap from="~input_polygons" to="multi_plane_estimate/output_polygon"/>
     <remap from="~input_coefficients" to="multi_plane_estimate/output_coefficuents"/>
