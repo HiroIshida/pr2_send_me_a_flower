@@ -34,11 +34,6 @@
  
 (ros::subscribe "/pickup_highest_box/output" jsk_recognition_msgs::BoundingBox #'callback-collision-adder)
 
-
-(send *co* :add-object *cube* :frame-id "base_footprint"
-           :relative-pose (send *cube* :copy-worldcoords)
-           :object-id "cube")
-
 (ros::rate 1)
 (do-until-key
 (ros::sleep)
