@@ -27,13 +27,13 @@
 
 (defun callback-collision-adder (box-msg)
   (let ((cube (box->cube box-msg)))
-    (print "received")
     (send *co* :add-object cube :frame-id "base_link"
                :relative-pose (send cube :copy-worldcoords)
                :object-id "cube")))
  
 (ros::subscribe "/pickup_highest_box/output" jsk_recognition_msgs::BoundingBox #'callback-collision-adder)
 
+(print "start node")
 (ros::rate 1)
 (do-until-key
 (ros::sleep)

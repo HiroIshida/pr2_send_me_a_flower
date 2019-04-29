@@ -10,7 +10,6 @@ rospy.init_node("pickup_highest_box")
 pub = rospy.Publisher('/pickup_highest_box/output', BoundingBox, queue_size=1)
 
 def callback(bbox_array):
-    print "fuck"
     z_max = -inf
     bbox_highest = BoundingBox()
     for bbox in bbox_array.boxes:
@@ -21,7 +20,6 @@ def callback(bbox_array):
     pub.publish(bbox_highest)
 
 sub = rospy.Subscriber('/plane2box/output', BoundingBoxArray, callback)
-print "node start"
 rospy.spin()
 
 

@@ -65,9 +65,7 @@ def callback(msg):
     bbox_array.boxes = boxes
     bbox_array.header = header_new
     pub.publish(bbox_array)
-    print "published"
 
 sub = rospy.Subscriber('/vase_detection/multi_plane_estimate/output_polygon', PolygonArray, callback)
-print "node start"
 rospy.spin()
 
