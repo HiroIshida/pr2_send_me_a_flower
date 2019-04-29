@@ -111,4 +111,4 @@
 (send *ri* :start-grasp :larm)
 (send *robot* :larm :move-end-pos #f(0 0 400) :world)
 (transmit-posture t)
-(send *ri* :stop-grasp)
+;(send *ri* :stop-grasp)
