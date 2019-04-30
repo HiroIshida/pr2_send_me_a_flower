@@ -583,7 +583,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.00999999978
       Style: Points
-      Topic: /vase_detection/ExtractIndices/output
+      Topic: /core/ExtractIndices/output
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -603,7 +603,7 @@ Visualization Manager:
     - Class: jsk_rviz_plugin/BoundingBox
       Enabled: true
       Name: BoundingBox
-      Topic: /vase_detection/bounding_box_marker/selected_box
+      Topic: /core/bounding_box_marker/selected_box
       Unreliable: true
       Value: true
       alpha: 0.800000012
@@ -619,14 +619,14 @@ Visualization Manager:
       Show Axes: false
       Show Descriptions: true
       Show Visual Aids: false
-      Update Topic: /vase_detection/bounding_box_interactive_marker/update
+      Update Topic: /core/bounding_box_interactive_marker/update
       Value: true
     - Alpha: 1
       Class: jsk_rviz_plugin/PolygonArray
       Color: 25; 255; 0
       Enabled: true
       Name: PolygonArray
-      Topic: /vase_detection/multi_plane_estimate/output_polygon
+      Topic: /core/multi_plane_estimate/output_polygon
       Unreliable: false
       Value: true
       coloring: Auto
@@ -791,7 +791,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.02878761
+      Distance: 5.52629614
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1

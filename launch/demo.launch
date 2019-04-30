@@ -48,7 +48,7 @@
   <include file="$(find pr2_moveit_config)/launch/move_group.launch"/>
 
   <!-- tabletop object detection -->
-  <group ns="vase_detection">
+  <group ns="core">
 
   <node name="$(arg manager)" pkg="nodelet" type="nodelet" args="manager"
         if="$(arg launch_manager)"

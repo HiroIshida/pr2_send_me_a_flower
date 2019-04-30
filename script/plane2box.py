@@ -66,6 +66,6 @@ def callback(msg):
     bbox_array.header = header_new
     pub.publish(bbox_array)
 
-sub = rospy.Subscriber('/vase_detection/multi_plane_estimate/output_polygon', PolygonArray, callback)
+sub = rospy.Subscriber('/core/multi_plane_estimate/output_polygon', PolygonArray, callback)
 rospy.spin()
 
