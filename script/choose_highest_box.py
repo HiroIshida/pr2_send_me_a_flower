@@ -6,8 +6,8 @@ from jsk_recognition_msgs.msg import BoundingBox
 
 inf = 1000000000
 
-rospy.init_node("pickup_highest_box")
-pub = rospy.Publisher('/pickup_highest_box/output', BoundingBox, queue_size=1)
+rospy.init_node("choose_highest_box")
+pub = rospy.Publisher('/choose_highest_box/output', BoundingBox, queue_size=1)
 
 def callback(bbox_array):
     z_max = -inf

@@ -31,7 +31,7 @@
                :relative-pose (send cube :copy-worldcoords)
                :object-id "cube")))
  
-(ros::subscribe "/pickup_highest_box/output" jsk_recognition_msgs::BoundingBox #'callback-collision-adder)
+(ros::subscribe "/choose_highest_box/output" jsk_recognition_msgs::BoundingBox #'callback-collision-adder)
 
 (print "start node")
 (ros::rate 1)
