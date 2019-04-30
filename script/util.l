@@ -20,6 +20,14 @@
   (send *ri* :wait-interpolation)
   )
 
+(defun get-msg (name-topic type-topic)
+  (let (msg)
+    (print "waiting ...")
+    (setq msg (one-shot-subscribe name-topic type-topic :after-stamp (ros::time) :timeout 1000000))
+    (print "received message")
+    msg
+    ))
+
 (defun stop-grasp ()
   (send *ri* :stop-grasp))
 

@@ -44,17 +44,6 @@
     pos-boxtop
     ))
 
-; (ex) name-topic "/vase_detection/boxes"
-; (ex) "/vase_detection/bounding_box_marker/selected_box"
-(print "start getting msg")
-(defun get-msg (name-topic type-topic)
-  (let (msg)
-    (print "waiting ...")
-    (setq msg (one-shot-subscribe name-topic type-topic :after-stamp (ros::time) :timeout 1000000))
-    (print "received message")
-    msg
-    ))
-
 (defun get-flower-position ()
   (let* (
          (msg-box (get-msg "/vase_detection/bounding_box_marker/selected_box" jsk_recognition_msgs::BoundingBox))
