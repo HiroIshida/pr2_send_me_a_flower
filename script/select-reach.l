@@ -1,6 +1,7 @@
 #!/usr/bin/env roseus
 (load "package://pr2eus/pr2-interface.l")
 (load "package://pr2eus_moveit/euslisp/pr2eus-moveit.l")
+(load "util.l")
 (pr2-init)
 (send *ri* :set-moveit-environment (instance pr2-moveit-environment :init))
 
@@ -35,16 +36,6 @@
     coords-global
     ))
 
-(defun solve-ik! (robot pos rpy 
-                            &key
-                            (which-arm :larm)
-                            (rotation-axis t)
-                            )
-  (send robot :inverse-kinematics (make-coords :pos pos :rpy rpy)
-        :link-list (send robot :link-list (send robot which-arm :end-coords :parent))
-        :move-target (send robot which-arm :end-coords)
-        :rotation-axis rotation-axis))
-
 (defun compute-pos-boxtop (bbox)
   (let* (
          (pos-box (send (get-box-global-coords bbox) :pos))
@@ -52,17 +43,6 @@
          )
     pos-boxtop
     ))
-
-(defun show (robot)
-  (objects (list robot)))
-
-(defun transmit-posture (&optional (force? nil))
-  (if force?
-      (send *ri* :angle-vector (send *robot* :angle-vector) 1000)
-      (send *ri* :angle-vector-motion-plan (send *robot* :angle-vector))
-      )
-  (send *ri* :wait-interpolation)
-  )
 
 ; (ex) name-topic "/vase_detection/boxes"
 ; (ex) "/vase_detection/bounding_box_marker/selected_box"
@@ -101,8 +81,6 @@
   (send *robot* :larm :move-end-pos #f(-50 0 0) :world)
   (transmit-posture t)
   )
-
-
 
 (robot-init!)
 (transmit-posture t)
