@@ -30,12 +30,12 @@
   <arg name="box_fileter_initial_pos" default="[0.0 0.0 0.0]" unless="$(arg pr2)"/>
 
   <!-- parameter for hsi filter -->
-  <arg name="h_max" default="8" />
-  <arg name="h_min" default="-128" />
-  <arg name="s_max" default="255" />
-  <arg name="s_min" default="45" />
-  <arg name="i_max" default="255" />
-  <arg name="i_min" default="0" />
+  <arg name="flower_h_max" default="8" />
+  <arg name="flower_h_min" default="-128" />
+  <arg name="flower_s_max" default="255" />
+  <arg name="flower_s_min" default="45" />
+  <arg name="flower_i_max" default="255" />
+  <arg name="flower_i_min" default="0" />
 
   <!-- parameter for euclidean clustering -->
   <arg name="clustering_tolerance" default="0.01"/>
@@ -115,12 +115,12 @@
       use_indices: false
       keep_organized: false
     </rosparam>
-    <param name="h_limit_max" value="$(arg h_max)" />
-    <param name="h_limit_min" value="$(arg h_min)" />
-    <param name="s_limit_max" value="$(arg s_max)" />
-    <param name="s_limit_min" value="$(arg s_min)" />
-    <param name="i_limit_max" value="$(arg i_max)" />
-    <param name="i_limit_min" value="$(arg i_min)" />
+    <param name="h_limit_max" value="$(arg flower_h_max)" />
+    <param name="h_limit_min" value="$(arg flower_h_min)" />
+    <param name="s_limit_max" value="$(arg flower_s_max)" />
+    <param name="s_limit_min" value="$(arg flower_s_min)" />
+    <param name="i_limit_max" value="$(arg flower_i_max)" />
+    <param name="i_limit_min" value="$(arg flower_i_min)" />
   </node>
 
   <node pkg="nodelet" type="nodelet" name="euclidean_clustering"
