@@ -56,18 +56,13 @@
 (defun show (robot)
   (objects (list robot)))
 
-
 (defun transmit-posture (&optional (force? nil))
   (if force?
-      (send *ri* :angle-vector (send *robot* :angle-vector) 5000)
+      (send *ri* :angle-vector (send *robot* :angle-vector) 1000)
       (send *ri* :angle-vector-motion-plan (send *robot* :angle-vector))
       )
   (send *ri* :wait-interpolation)
   )
-
-(defun fuck ()
-  (robot-init!)
-  (transmit-moveit-posture))
 
 ; (ex) name-topic "/vase_detection/boxes"
 ; (ex) "/vase_detection/bounding_box_marker/selected_box"
@@ -99,16 +94,25 @@
     (solve-ik! *robot* (v+ *pos-grasp* #f(0 50 0)) #f(-1.57 0 0) :rotation-axis t)
     (show *robot*)
     ))
-;(guide-larm)
+
+(defun shake-larm ()
+  (send *robot* :larm :move-end-pos #f(50 0 0) :world)
+  (transmit-posture t)
+  (send *robot* :larm :move-end-pos #f(-50 0 0) :world)
+  (transmit-posture t)
+  )
+
+
 
 (robot-init!)
 (transmit-posture t)
 (send *ri* :stop-grasp)
 (guide-larm) 
-(transmit-posture)
+(transmit-posture t)
 (send *robot* :larm :move-end-pos #f(0 -50 0) :world)
 (transmit-posture t)
 (send *ri* :start-grasp :larm)
-(send *robot* :larm :move-end-pos #f(0 0 400) :world)
-(transmit-posture t)
+(shake-larm)
+;(send *robot* :larm :move-end-pos #f(0 0 400) :world)
+;(transmit-posture t)
 ;(send *ri* :stop-grasp)
