@@ -1,0 +1,28 @@
+<launch>
+  <arg name="nodelet_arg1" value="standalone"/>
+  <arg name="nodelet_arg2" value="standalone"/>
+
+  <arg name="input" default="/core/multi_plane_extraction/output"/>
+
+  <group ns="vase_detection">
+    <node pkg="nodelet" type="nodelet" name="euclidean_clustering"
+          args="$(arg nodelet_arg1) jsk_pcl/EuclideanClustering $(arg nodelet_arg2)" output="screen">
+      <remap from="~input" to="$(arg input)" />
+      <rosparam>
+        tolerance: 0.1
+        min_size: 50
+      </rosparam>
+    </node>
+    <node pkg="nodelet" type="nodelet"
+          name="cluster_decomposer"
+          args="$(arg nodelet_arg1) jsk_pcl/ClusterPointIndicesDecomposerZAxis $(arg nodelet_arg2)"
+          output="screen" clear_params="true">
+      <remap from="~input" to="$(arg input)" />
+      <remap from="~target" to="euclidean_clustering/output" />
+      <remap from="~debug_output" to="debug_output" />
+      <remap from="~boxes" to="boxes"/>
+      <rosparam>
+      </rosparam>
+    </node>
+  </group>
+</launch>
