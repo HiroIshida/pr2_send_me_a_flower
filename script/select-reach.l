@@ -46,7 +46,7 @@
 
 (defun get-flower-position ()
   (let* (
-         (msg-box (get-msg "/vase_detection/bounding_box_marker/selected_box" jsk_recognition_msgs::BoundingBox))
+         (msg-box (get-msg "/core/bounding_box_marker/selected_box" jsk_recognition_msgs::BoundingBox))
          (coords-box (get-box-global-coords msg-box))
          (pos-box (send coords-box :pos))
          )
