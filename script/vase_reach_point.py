@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import rospy
 import tf
 import numpy as np
@@ -32,6 +33,7 @@ def callback_table_box(bbox):
 sub = rospy.Subscriber('/choose_highest_box/output', BoundingBox, callback_table_box)
 
 def callback_triger(msg):
+    print "get-msg"
     global triger
     triger = False # this callback will be called only once
 
@@ -51,6 +53,7 @@ def callback_triger(msg):
     p_reach.y = ps_flower_target.point.y
     p_reach.z = z_table
     pub.publish(p_reach)
-sub = rospy.Subscriber('/motion/triger', String, callback_triger)
+
+sub = rospy.Subscriber('/chatter', String, callback_triger)
 
 rospy.spin()
