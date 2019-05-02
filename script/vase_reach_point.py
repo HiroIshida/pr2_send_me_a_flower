@@ -33,18 +33,26 @@ def callback_table_box(bbox):
 sub = rospy.Subscriber('/choose_highest_box/output', BoundingBox, callback_table_box)
 
 def callback_triger(msg):
-    print "get-msg"
     global triger
     triger = False # this callback will be called only once
 
     global bbox_largest
     global bbox_table
+    # will be concise if use ros service
+    receivedBothData = (
+            (bbox_largest.header.frame_id != '')  
+            and
+            (bbox_table.header.frame_id != '')
+            )
+    if not receivedBothData:
+        return
 
+    print "hahaha"
     # as for transform, see:
     # http://docs.ros.org/jade/api/tf/html/python/tf_python.html
     ps_flower_source = PointStamped()
     ps_flower_source.header = bbox_largest.header
-    ps_flower_source.point = bbox.pose.position
+    ps_flower_source.point = bbox_table.pose.position
     ps_flower_target = tf_listerner.transformPoint('/base_link', ps_flower_source)
     z_table = bbox_table.dimensions.z * 0.5 + bbox_table.pose.position.z
 
