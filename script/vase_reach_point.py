@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import time
 import tf
 import numpy as np
 from std_msgs.msg import String
@@ -39,15 +40,23 @@ def callback_triger(msg):
     global bbox_largest
     global bbox_table
     # will be concise if use ros service
-    receivedBothData = (
-            (bbox_largest.header.frame_id != '')  
-            and
-            (bbox_table.header.frame_id != '')
-            )
-    if not receivedBothData:
-        return
 
-    print "hahaha"
+    def receivedBothData(bbox_largest, bbox_table):
+        boolean = (
+                (bbox_largest.header.frame_id != '')  
+                and
+                (bbox_table.header.frame_id != '')
+                )
+        return boolean
+
+    while not receivedBothData(bbox_largest, bbox_table):
+        time.sleep(1)
+        print "waiting..."
+    print "received"
+
+    # without this, error related to time stump may occur
+    bbox_largest.header.stamp = bbox_table.header.stamp
+
     # as for transform, see:
     # http://docs.ros.org/jade/api/tf/html/python/tf_python.html
     ps_flower_source = PointStamped()
