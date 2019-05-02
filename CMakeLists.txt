@@ -11,6 +11,13 @@ find_package(catkin REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
+  std_msgs
+  geometry_msgs
+  message_generation
+  )
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -50,11 +57,10 @@ find_package(catkin REQUIRED)
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+   FILES
+   ReachPoint.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -64,10 +70,11 @@ find_package(catkin REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+  geometry_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -99,9 +106,9 @@ find_package(catkin REQUIRED)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  #INCLUDE_DIRS include
 #  LIBRARIES pr2_send_flower
-#  CATKIN_DEPENDS other_catkin_pkg
+  CATKIN_DEPENDS rospy std_msgs geometry_msgs
 #  DEPENDS system_lib
 )
 
