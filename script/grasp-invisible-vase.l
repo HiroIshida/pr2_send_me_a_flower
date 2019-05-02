@@ -10,14 +10,18 @@
 (ros::roseus "triger" :anonymous t)
 (ros::advertise "/chatter" std_msgs::string 1) 
 (ros::rate 10)
-(ros::publish "/chatter" 
-              (let (msg)
-                (setq msg (instance std_msgs::string :init))
-                (send msg :data "fuck")
-                msg
-                ))
+(while (ros::ok)
+        (ros::publish "/chatter" 
+                      (let (msg)
+                        (setq msg (instance std_msgs::string :init))
+                        (send msg :data "fuck")
+                        msg
+                        ))
+        (ros::sleep)
+        )
+(exit)
 
-(setq w 50)
+;(setq w 50)
 ;(dotimes (i 5)
 ;  (send *robot* :rarm :move-end-pos (float-vector (* w 1) 20 0) :world)
 ;  (transmit-posture t)
