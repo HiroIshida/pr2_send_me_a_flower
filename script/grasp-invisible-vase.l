@@ -2,24 +2,21 @@
 (load "util.l")
 (ros::load-ros-manifest "jsk_recognition_msgs")
 (ros::load-ros-manifest "roseus")
+(ros::load-ros-manifest "pr2_send_flower")
 
 (pr2-init)
 (setq *robot* *pr2*)
 (setq *r* *robot*)
 
-(ros::roseus "triger" :anonymous t)
-(ros::advertise "/chatter" std_msgs::string 1) 
-(ros::rate 10)
-(while (ros::ok)
-        (ros::publish "/chatter" 
-                      (let (msg)
-                        (setq msg (instance std_msgs::string :init))
-                        (send msg :data "fuck")
-                        msg
-                        ))
-        (ros::sleep)
-        )
-(exit)
+(ros::roseus "trigger_test" :anonymous t)
+(ros::wait-for-service "trigger")
+(setq req (instance pr2_send_flower::ReachPointRequest :init))
+(print "a")
+(setq res (ros::service-call "trigger" req))
+;(send res :position)
+
+
+
 
 ;(setq w 50)
 ;(dotimes (i 5)

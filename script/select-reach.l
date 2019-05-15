@@ -1,9 +1,9 @@
 #!/usr/bin/env roseus
 (load "package://pr2eus/pr2-interface.l")
-(load "package://pr2eus_moveit/euslisp/pr2eus-moveit.l")
+;(load "package://pr2eus_moveit/euslisp/pr2eus-moveit.l")
 (load "util.l")
 (pr2-init)
-(send *ri* :set-moveit-environment (instance pr2-moveit-environment :init))
+;(send *ri* :set-moveit-environment (instance pr2-moveit-environment :init))
 
 ;(ros::roseus "reaching")
 (ros::load-ros-manifest "jsk_recognition_msgs")
@@ -12,7 +12,7 @@
 
 (print "robot initialized")
 (setq *tfl* (instance ros::transform-listener :init))
-(setq *co* (instance collision-object-publisher :init))
+;(setq *co* (instance collision-object-publisher :init))
 (setq *robot* *pr2*)
 
 (defun robot-init! ()
@@ -73,13 +73,13 @@
 
 (robot-init!)
 (transmit-posture t)
-(send *ri* :stop-grasp)
-(guide-larm) 
-(transmit-posture t)
-(send *robot* :larm :move-end-pos #f(0 -50 0) :world)
-(transmit-posture t)
-(send *ri* :start-grasp :larm)
-(shake-larm)
+;(send *ri* :stop-grasp)
+;(guide-larm) 
+;(transmit-posture t)
+;(send *robot* :larm :move-end-pos #f(0 -50 0) :world)
+;(transmit-posture t)
+;(send *ri* :start-grasp :larm)
+;(shake-larm)
 ;(send *robot* :larm :move-end-pos #f(0 0 400) :world)
 ;(transmit-posture t)
 ;(send *ri* :stop-grasp)

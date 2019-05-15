@@ -10,11 +10,14 @@ from sensor_msgs.msg import PointCloud
 from geometry_msgs.msg import PointStamped
 from geometry_msgs.msg import Point
 
+from std_srvs.srv import Trigger
+#from ReachPoint.srv import *
+from pr2_send_flower.srv import *
+
 rospy.init_node("vase_reach_point")
 tf_listerner = tf.TransformListener()
-pub = rospy.Publisher('/vase_reach_point', Point, queue_size=1)
+#pub = rospy.Publisher('/vase_reach_point', Point, queue_size=1)
 
-triger = True 
 bbox_largest = BoundingBox()
 bbox_table = BoundingBox()
 
@@ -33,10 +36,7 @@ def callback_table_box(bbox):
     bbox_table = bbox
 sub = rospy.Subscriber('/choose_highest_box/output', BoundingBox, callback_table_box)
 
-def callback_triger(msg):
-    global triger
-    triger = False # this callback will be called only once
-
+def handle_request(req):
     global bbox_largest
     global bbox_table
     # will be concise if use ros service
@@ -69,8 +69,8 @@ def callback_triger(msg):
     p_reach.x = ps_flower_target.point.x
     p_reach.y = ps_flower_target.point.y
     p_reach.z = z_table
-    pub.publish(p_reach)
+    return ReachPointResponse(position = p_reach)
+    #pub.publish(p_reach)
 
-sub = rospy.Subscriber('/chatter', String, callback_triger)
-
+sr = rospy.Service('trigger', ReachPoint, handle_request)
 rospy.spin()
