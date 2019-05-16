@@ -22,13 +22,10 @@ bbox_largest = BoundingBox()
 bbox_table = BoundingBox()
 
 def callback_largest_box(bbox_array):
-    def calc_volume(bbox):
-        size = bbox.dimensions
-        return size.x * size.y * size.z
-    vol_lst = [calc_volume(bbox) for bbox in bbox_array.boxes]
-    idx_largest = np.argmax(vol_lst)
+    z_lst_bbox = [bbox.pose.position.z for bbox in bbox_array.boxes]
+    idx_closest = np.argmin(z_lst_bbox)
     global bbox_largest
-    bbox_largest = bbox_array.boxes[idx_largest]
+    bbox_largest = bbox_array.boxes[idx_closest]
 sub = rospy.Subscriber('/vase_detection/boxes', BoundingBoxArray, callback_largest_box)
 
 def callback_table_box(bbox):
@@ -52,25 +49,43 @@ def handle_request(req):
     while not receivedBothData(bbox_largest, bbox_table):
         time.sleep(1)
         print "waiting..."
+
+    """
+    def receivedData(bbox_largest):
+        boolean = (bbox_largest.header.frame_id != '')
+        return boolean
+        """
+
+    while not receivedBothData(bbox_largest, bbox_table):
+        time.sleep(0.01)
+        print "waiting..."
+
     print "received"
 
+    #print rospy.rostime.Time.now()
+
     # without this, error related to time stump may occur
-    bbox_largest.header.stamp = bbox_table.header.stamp
+    bbox_largest.header.stamp = max(bbox_table.header.stamp, bbox_largest.header.stamp)
+    #bbox_largest.header.stamp = bbox_table.header.stamp
 
     # as for transform, see:
     # http://docs.ros.org/jade/api/tf/html/python/tf_python.html
     ps_flower_source = PointStamped()
     ps_flower_source.header = bbox_largest.header
-    ps_flower_source.point = bbox_table.pose.position
+    ps_flower_source.point = bbox_largest.pose.position
     ps_flower_target = tf_listerner.transformPoint('/base_link', ps_flower_source)
+    
     z_table = bbox_table.dimensions.z * 0.5 + bbox_table.pose.position.z
-
     p_reach = Point()
     p_reach.x = ps_flower_target.point.x
     p_reach.y = ps_flower_target.point.y
     p_reach.z = z_table
+    """
+    p_reach.x = ps_flower_source.point.x
+    p_reach.y = ps_flower_source.point.y
+    p_reach.z = ps_flower_source.point.z
+    """
     return ReachPointResponse(position = p_reach)
-    #pub.publish(p_reach)
 
 sr = rospy.Service('trigger', ReachPoint, handle_request)
 rospy.spin()
