@@ -5,13 +5,22 @@ from jsk_recognition_msgs.msg import PolygonArray
 from jsk_recognition_msgs.msg import BoundingBoxArray
 from jsk_recognition_msgs.msg import BoundingBox
 from sensor_msgs.msg import PointCloud
+from std_msgs.msg import Float64
 
 import tf
 import numpy as np
 from numpy.linalg import inv
 scaler = 1
 
-rospy.init_node("make_collision_cubes")
+name_node = "table_detector"
+name_pub1 = name_node + "/box"
+name_pub2 = name_node + "/height_top"
+name_pub3 = name_node + "/height_top_average"
+
+rospy.init_node(name_node)
+pub1 = rospy.Publisher(name_pub1, BoundingBox, queue_size=1)
+pub2 = rospy.Publisher(name_pub2, Float64, queue_size=1)
+#pub3 = rospy.Publisher(name_pub3, float64, queue_size=1)
 tf_listerner = tf.TransformListener()
 
 def polygon2pointcloud(polygon, header):
@@ -49,13 +58,24 @@ def polygon2box(polygon, header_pre, header_new):
     bbox.header = header_new
     return bbox
 
-pub = rospy.Publisher('/plane2box/output', BoundingBoxArray, queue_size=1)
+def choose_highest_box(bbox_array):#higest wrt base link
+    inf = 1000000000
+    z_max = -inf
+    bbox_highest = BoundingBox()
+    for bbox in bbox_array.boxes:
+        z_box = bbox.pose.position.z + bbox.dimensions.z * 0.5
+        if z_box > z_max:
+            bbox_highest = bbox
+            z_max = z_box
+    return bbox_highest
+
 
 def callback(msg):
     polygons = msg.polygons
     header_pre = msg.header
     header_new = Header(stamp = header_pre.stamp, frame_id = '/base_link')
 
+    # apply polygon2box to all boxes
     boxes = []
     for polystump in polygons:
         polygon = polystump.polygon
@@ -64,7 +84,13 @@ def callback(msg):
     bbox_array = BoundingBoxArray()
     bbox_array.boxes = boxes
     bbox_array.header = header_new
-    pub.publish(bbox_array)
+
+    # find box of table and publish relevant topics
+    bbox_table = choose_highest_box(bbox_array)
+    height_top = bbox_table.dimensions.z
+    pub1.publish(bbox_table)
+    pub2.publish(height_top)
+    print height_top
 
 sub = rospy.Subscriber('/core/multi_plane_estimate/output_polygon', PolygonArray, callback)
 rospy.spin()
