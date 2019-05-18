@@ -4,6 +4,8 @@ import time
 import tf
 import numpy as np
 from std_msgs.msg import String
+from std_msgs.msg import Float64
+from std_msgs.msg import Time
 from jsk_recognition_msgs.msg import BoundingBoxArray
 from jsk_recognition_msgs.msg import BoundingBox
 from sensor_msgs.msg import PointCloud
@@ -18,73 +20,50 @@ rospy.init_node("vase_reach_point")
 tf_listerner = tf.TransformListener()
 #pub = rospy.Publisher('/vase_reach_point', Point, queue_size=1)
 
-bbox_largest = BoundingBox()
-bbox_table = BoundingBox()
+inf = 1000000000000000000
+bbox_flower = BoundingBox()
+h_table = inf
+def callback_height_top(h):
+    global h_table
+    h_table = h.data
+sub = rospy.Subscriber('/table_detector/height_top', Float64, callback_height_top)
 
 def callback_largest_box(bbox_array):
-    z_lst_bbox = [bbox.pose.position.z for bbox in bbox_array.boxes]
-    idx_closest = np.argmin(z_lst_bbox)
-    global bbox_largest
-    bbox_largest = bbox_array.boxes[idx_closest]
+    def calc_volume(bbox):
+        size = bbox.dimensions
+        return size.x * size.y * size.z
+    vol_lst = [calc_volume(bbox) for bbox in bbox_array.boxes]
+    idx_largest = np.argmax(vol_lst)
+    global bbox_flower
+    bbox_flower = bbox_array.boxes[idx_largest]
 sub = rospy.Subscriber('/vase_detection/boxes', BoundingBoxArray, callback_largest_box)
 
-def callback_table_box(bbox):
-    global bbox_table
-    bbox_table = bbox
-sub = rospy.Subscriber('/choose_highest_box/output', BoundingBox, callback_table_box)
-
 def handle_request(req):
-    global bbox_largest
-    global bbox_table
+
+    global h_table
+    global bbox_flower
     # will be concise if use ros service
 
-    def receivedBothData(bbox_largest, bbox_table):
+    def receivedBothData(bbox_flower, h_table):
         boolean = (
-                (bbox_largest.header.frame_id != '')  
+                (bbox_flower.header.frame_id != '')  
                 and
-                (bbox_table.header.frame_id != '')
+                (h_table != inf)
                 )
+        print (bbox_flower.header.frame_id != '')
+        print (h_table != inf)
         return boolean
 
-    while not receivedBothData(bbox_largest, bbox_table):
-        time.sleep(1)
+    while not receivedBothData(bbox_flower, h_table):
+        time.sleep(0.001)
         print "waiting..."
-
-    """
-    def receivedData(bbox_largest):
-        boolean = (bbox_largest.header.frame_id != '')
-        return boolean
-        """
-
-    while not receivedBothData(bbox_largest, bbox_table):
-        time.sleep(0.01)
-        print "waiting..."
-
     print "received"
+    print h_table
 
-    #print rospy.rostime.Time.now()
-
-    # without this, error related to time stump may occur
-    bbox_largest.header.stamp = max(bbox_table.header.stamp, bbox_largest.header.stamp)
-    #bbox_largest.header.stamp = bbox_table.header.stamp
-
-    # as for transform, see:
-    # http://docs.ros.org/jade/api/tf/html/python/tf_python.html
-    ps_flower_source = PointStamped()
-    ps_flower_source.header = bbox_largest.header
-    ps_flower_source.point = bbox_largest.pose.position
-    ps_flower_target = tf_listerner.transformPoint('/base_link', ps_flower_source)
-    
-    z_table = bbox_table.dimensions.z * 0.5 + bbox_table.pose.position.z
     p_reach = Point()
-    p_reach.x = ps_flower_target.point.x
-    p_reach.y = ps_flower_target.point.y
-    p_reach.z = z_table
-    """
-    p_reach.x = ps_flower_source.point.x
-    p_reach.y = ps_flower_source.point.y
-    p_reach.z = ps_flower_source.point.z
-    """
+    p_reach.x = bbox_flower.pose.position.x
+    p_reach.y = bbox_flower.pose.position.y
+    p_reach.z = h_table
     return ReachPointResponse(position = p_reach)
 
 sr = rospy.Service('trigger', ReachPoint, handle_request)
