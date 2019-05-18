@@ -6,7 +6,7 @@
 (print "a")
 
 (pr2-init)
-(load 
+(load "ishida-pr2-init.l")
 (setq *robot* *pr2*)
 (setq *r* *robot*)
 
@@ -27,47 +27,47 @@
         pos-vec
         ))
 
-(defun tp () (transmit-posture t))
+(defun tp () (transmit-posture *robot* t))
 
 (setq pos-rarm (v+ pos-flower #f(0 -150 30)))
 (setq pos-larm (v+ pos-flower #f(0 150 30)))
 (solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
 (solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
 (show *robot*)
-(transmit-posture t)
+(transmit-posture *robot* t)
 
 (setq pos-rarm (v+ pos-rarm #f(0 30 0)))
 (setq pos-larm (v+ pos-larm #f(0 -30 0)))
 (solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
 (solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
 (show *robot*)
-(transmit-posture t)
+(transmit-posture *robot* t)
 
 (setq pos-rarm (v+ pos-rarm #f(0 30 0)))
 (setq pos-larm (v+ pos-larm #f(0 -30 0)))
 (solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
 (solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
 (show *robot*)
-(transmit-posture t)
+(transmit-posture *robot* t)
 
 (setq pos-rarm (v+ pos-rarm #f(0 30 0)))
 (setq pos-larm (v+ pos-larm #f(0 -30 0)))
 (solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
 (solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
 (show *robot*)
-(transmit-posture t)
+(transmit-posture *robot* t)
 
 (setq pos-rarm (v+ pos-rarm #f(0 20 0)))
 (setq pos-larm (v+ pos-larm #f(0 -20 0)))
 (solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
 (solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
 (show *robot*)
-(transmit-posture t)
+(transmit-posture *robot* t)
 
 (setq pos-rarm (v+ pos-rarm #f(0 -80 0)))
 (solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
 (show *robot*)
-(transmit-posture t)
+(transmit-posture *robot* t)
 
 
 

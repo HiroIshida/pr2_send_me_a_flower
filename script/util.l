@@ -12,13 +12,25 @@
 (defun show (robot)
   (objects (list robot)))
 
-(defun transmit-posture (&optional (force? nil))
+(defun transmit-posture (robot &optional (force? nil))
   (if force?
-      (send *ri* :angle-vector (send *robot* :angle-vector) 5000)
-      (send *ri* :angle-vector-motion-plan (send *robot* :angle-vector))
+      (send *ri* :angle-vector (send robot :angle-vector) 5000)
+      (send *ri* :angle-vector-motion-plan (send robot :angle-vector))
       )
   (send *ri* :wait-interpolation)
   )
+
+(defun follow-robot-sequence (robot-sequence ;; robot-sequence is a list of *robot*
+                               &optional (force? nil))
+  (let (
+        (robot-now (car robot-sequence))
+        (robot-seq-remaining (cdr robot-sequence))
+        )
+    (if (null robot-now)
+        (print "finish sequence")
+        (progn 
+          (transmit-posture robot-now force?)
+          (follow-robot-sequence robot-seq-remaining force?)))))
 
 (defun get-msg (name-topic type-topic)
   (let (msg)

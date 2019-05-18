@@ -55,9 +55,9 @@
 
 (defun shake-larm ()
   (send *robot* :larm :move-end-pos #f(50 0 0) :world)
-  (transmit-posture t)
+  (transmit-posture *robot* t)
   (send *robot* :larm :move-end-pos #f(-50 0 0) :world)
-  (transmit-posture t)
+  (transmit-posture *robot* t)
   )
 
 (robot-init!)

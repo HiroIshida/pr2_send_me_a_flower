@@ -14,4 +14,4 @@
     (send *robot* :torso_lift_joint :joint-angle 100)
     )
 (robot-init!)
-(transmit-posture t)
+(transmit-posture *robot* t)
