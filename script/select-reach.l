@@ -13,18 +13,7 @@
 (print "robot initialized")
 (setq *tfl* (instance ros::transform-listener :init))
 ;(setq *co* (instance collision-object-publisher :init))
-(setq *robot* *pr2*)
-
-(defun robot-init! ()
-    (send *robot* :reset-manip-pose)
-    (send *robot* :l_upper_arm_roll_joint :joint-angle -10)
-    (send *robot* :r_upper_arm_roll_joint :joint-angle -10)
-    (send *robot* :l_shoulder_lift_joint :joint-angle -20)
-    (send *robot* :r_shoulder_lift_joint :joint-angle -20)
-    (send *robot* :l_upper_arm_roll_joint :joint-angle 40)
-    (send *robot* :r_upper_arm_roll_joint :joint-angle -40)
-    (send *robot* :torso_lift_joint :joint-angle 100)
-    )
+(load "ishida-pr2-init.l")
 
 (defun get-box-global-coords (bbox)
   (let* (
@@ -83,3 +72,5 @@
 ;(send *robot* :larm :move-end-pos #f(0 0 400) :world)
 ;(transmit-posture t)
 ;(send *ri* :stop-grasp)
+(send *robot* :rarm :move-end-pos #f(0 0 -30) :world)
+;(transmit-posture t)

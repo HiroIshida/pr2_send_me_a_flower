@@ -6,6 +6,7 @@
 (print "a")
 
 (pr2-init)
+(load 
 (setq *robot* *pr2*)
 (setq *r* *robot*)
 
@@ -14,28 +15,60 @@
 (setq req (instance pr2_send_flower::ReachPointRequest :init))
 (setq res (ros::service-call "trigger" req))
 (print "a")
-(setq pos-reach 
+(setq pos-flower 
       (let* (
              (pos-srv (send res :position))
              (pos-vec (float-vector 
                         (* (send pos-srv :x) 1000)
                         (* (send pos-srv :y) 1000)
-                        (* (send pos-srv :z) 1000)
+                        (+ (* (send pos-srv :z) 1000) 60)
                         ))
              )
         pos-vec
         ))
 
-(solve-ik! *robot* pos-reach #f(-1.57 0 0) :rotation-axis nil :which-arm :rarm)
-;(show *robot*)
+(defun tp () (transmit-posture t))
+
+(setq pos-rarm (v+ pos-flower #f(0 -150 30)))
+(setq pos-larm (v+ pos-flower #f(0 150 30)))
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
+(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
+(show *robot*)
+(transmit-posture t)
+
+(setq pos-rarm (v+ pos-rarm #f(0 30 0)))
+(setq pos-larm (v+ pos-larm #f(0 -30 0)))
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
+(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
+(show *robot*)
+(transmit-posture t)
+
+(setq pos-rarm (v+ pos-rarm #f(0 30 0)))
+(setq pos-larm (v+ pos-larm #f(0 -30 0)))
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
+(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
+(show *robot*)
+(transmit-posture t)
+
+(setq pos-rarm (v+ pos-rarm #f(0 30 0)))
+(setq pos-larm (v+ pos-larm #f(0 -30 0)))
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
+(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
+(show *robot*)
+(transmit-posture t)
+
+(setq pos-rarm (v+ pos-rarm #f(0 20 0)))
+(setq pos-larm (v+ pos-larm #f(0 -20 0)))
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
+(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
+(show *robot*)
+(transmit-posture t)
+
+(setq pos-rarm (v+ pos-rarm #f(0 -80 0)))
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
+(show *robot*)
+(transmit-posture t)
 
 
 
 
-;(setq w 50)
-;(dotimes (i 5)
-;  (send *robot* :rarm :move-end-pos (float-vector (* w 1) 20 0) :world)
-;  (transmit-posture t)
-;  (send *robot* :rarm :move-end-pos (float-vector (* w -1) 20 0) :world)
-;  (transmit-posture t)
-;  )

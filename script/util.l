@@ -14,7 +14,7 @@
 
 (defun transmit-posture (&optional (force? nil))
   (if force?
-      (send *ri* :angle-vector (send *robot* :angle-vector) 1000)
+      (send *ri* :angle-vector (send *robot* :angle-vector) 5000)
       (send *ri* :angle-vector-motion-plan (send *robot* :angle-vector))
       )
   (send *ri* :wait-interpolation)
