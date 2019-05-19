@@ -1,9 +1,7 @@
 (load "package://pr2eus/pr2-interface.l")
-(load "util.l")
 (ros::load-ros-manifest "jsk_recognition_msgs")
 (ros::load-ros-manifest "roseus")
 (ros::load-ros-manifest "pr2_send_flower")
-(print "a")
 
 (pr2-init)
 (load "ishida-pr2-init.l")

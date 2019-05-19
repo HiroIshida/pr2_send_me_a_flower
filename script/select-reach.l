@@ -1,7 +1,8 @@
 #!/usr/bin/env roseus
 (load "package://pr2eus/pr2-interface.l")
 ;(load "package://pr2eus_moveit/euslisp/pr2eus-moveit.l")
-(load "util.l")
+(load "util/util-ros.l")
+(load "util/util-motion.l")
 (pr2-init)
 ;(send *ri* :set-moveit-environment (instance pr2-moveit-environment :init))
 

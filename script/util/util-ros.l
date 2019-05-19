@@ -1,13 +1,14 @@
 
-(defun solve-ik! (robot pos rpy 
+(defun solve-ik (robot-pre pos rpy which-arm
                             &key
-                            (which-arm :larm)
                             (rotation-axis t)
                             )
-  (send robot :inverse-kinematics (make-coords :pos pos :rpy rpy)
-        :link-list (send robot :link-list (send robot which-arm :end-coords :parent))
-        :move-target (send robot which-arm :end-coords)
-        :rotation-axis rotation-axis))
+  (let ((robot-new (copy-object robot-pre)))
+    (send robot-new :inverse-kinematics (make-coords :pos pos :rpy rpy)
+          :link-list (send robot-new :link-list (send robot-new which-arm :end-coords :parent))
+          :move-target (send robot-new which-arm :end-coords)
+          :rotation-axis rotation-axis)
+    robot-new))
 
 (defun show (robot)
   (objects (list robot)))
@@ -40,10 +41,6 @@
     msg
     ))
 
-(defun stop-grasp ()
-  (send *ri* :stop-grasp))
 
-(defun start-grasp()
-  (send *ri* :start-grasp))
 
 

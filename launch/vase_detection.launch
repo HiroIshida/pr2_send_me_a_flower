@@ -28,4 +28,6 @@
       </rosparam>
     </node>
   </group>
+
+  <node pkg="pr2_send_flower" type="vase_reach_point.py" name="vase_point_finder" output="screen"/>
 </launch>

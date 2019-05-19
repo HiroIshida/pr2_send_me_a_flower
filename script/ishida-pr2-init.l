@@ -1,6 +1,6 @@
 #!/usr/bin/env roseus
 (load "package://pr2eus/pr2-interface.l")
-(load "util.l")
+(load "util/util-ros.l")
 (pr2-init)
 (setq *robot* *pr2*)
 (defun robot-init! ()
