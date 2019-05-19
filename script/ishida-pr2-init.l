@@ -16,5 +16,5 @@
     )
 (robot-init!)
 (show *robot*)
-;(send *robot* :reset-pose)
-;(transmit-posture *robot* t)
+(transmit-posture *robot*)
+

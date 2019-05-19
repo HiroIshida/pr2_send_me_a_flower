@@ -65,11 +65,12 @@
         (cut-list-from-start (reverse result) 1)
   )))
 
-(defun transmit-robot-sequence (robot robot-sequence &optional (duration 3000))
+(defun transmit-robot-sequence (robot robot-sequence &key (duration 3000))
   (dolist (r robot-sequence)
     (progn 
       (setq *robot* r)
-      (transmit-posture r t))))
+      (transmit-posture r :duration duration))))
+
 
 ;(setq rs (get-slidearm-robot-sequence *robot* 
 ;                                      :r-vec-slide #f(100 0 0)
