@@ -7,7 +7,7 @@
 (load "util-motion.l")
 (load "util-ros.l")
 (load "ishida-pr2-init.l")
-(unix:sleep 3)
+(unix:sleep 10)
 ;(speak-en "start")
 
 (ros::roseus "trigger_test" :anonymous t)
@@ -47,6 +47,21 @@
 (transmit-posture *robot*)
 
 ; attack pose
+(solve-ik! *robot* pos-rarm #f(1.57 0.3 0) :rarm :rotation-axis t)
+(show *robot*)
+(transmit-posture *robot*)
+(send *ri* :stop-grasp :rarm)
+
+; attack
+(setq pos-rarm (v+ pos-rarm #f(0 200 0)))
+(solve-ik! *robot* pos-rarm #f(1.57 0.3 0) :rarm :rotation-axis t)
+(show *robot*)
+(transmit-posture *robot*)
+
+; grasp
+(send *ri* :start-grasp :rarm)
+
+(setq pos-rarm (v+ pos-rarm #f(0 0 100)))
 (solve-ik! *robot* pos-rarm #f(1.57 0.3 0) :rarm :rotation-axis t)
 (show *robot*)
 (transmit-posture *robot*)
