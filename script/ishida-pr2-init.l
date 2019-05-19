@@ -1,6 +1,7 @@
 #!/usr/bin/env roseus
 (load "package://pr2eus/pr2-interface.l")
-(load "util/util-ros.l")
+(load "util-ros.l")
+
 (pr2-init)
 (setq *robot* *pr2*)
 (defun robot-init! ()
@@ -13,5 +14,7 @@
     (send *robot* :r_upper_arm_roll_joint :joint-angle -40)
     (send *robot* :torso_lift_joint :joint-angle 100)
     )
-(send *robot* :reset-pose)
-(transmit-posture *robot* t)
+(robot-init!)
+(show *robot*)
+;(send *robot* :reset-pose)
+;(transmit-posture *robot* t)

@@ -4,7 +4,8 @@
 (ros::load-ros-manifest "pr2_send_flower")
 
 (pr2-init)
-(load "ishida-pr2-init.l")
+;(load "ishida-pr2-init.l")
+(load "util-motion.l")
 (setq *robot* *pr2*)
 (setq *r* *robot*)
 
@@ -25,45 +26,21 @@
         pos-vec
         ))
 
-(defun tp () (transmit-posture *robot* t))
-
 (setq pos-rarm (v+ pos-flower #f(0 -150 30)))
 (setq pos-larm (v+ pos-flower #f(0 150 30)))
-(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
-(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rarm :rotation-axis t)
+(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :larm :rotation-axis t)
 (show *robot*)
 (transmit-posture *robot* t)
 
-(setq pos-rarm (v+ pos-rarm #f(0 30 0)))
-(setq pos-larm (v+ pos-larm #f(0 -30 0)))
-(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
-(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
-(show *robot*)
-(transmit-posture *robot* t)
+; sandwitch 
+(transmit-robot-sequence *robot* 
+                         (get-slidearm-robot-sequence
+                           *robot* :r-vec-slide #f(0 110 0) :l-vec-slide #f(0 -110 0) :n-split 4))
 
-(setq pos-rarm (v+ pos-rarm #f(0 30 0)))
-(setq pos-larm (v+ pos-larm #f(0 -30 0)))
-(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
-(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
-(show *robot*)
-(transmit-posture *robot* t)
-
-(setq pos-rarm (v+ pos-rarm #f(0 30 0)))
-(setq pos-larm (v+ pos-larm #f(0 -30 0)))
-(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
-(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
-(show *robot*)
-(transmit-posture *robot* t)
-
-(setq pos-rarm (v+ pos-rarm #f(0 20 0)))
-(setq pos-larm (v+ pos-larm #f(0 -20 0)))
-(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
-(solve-ik! *robot* pos-larm #f(1.57 1.57 0) :rotation-axis t :which-arm :larm)
-(show *robot*)
-(transmit-posture *robot* t)
-
+; leave for once
 (setq pos-rarm (v+ pos-rarm #f(0 -80 0)))
-(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rotation-axis t :which-arm :rarm)
+(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rarm :rotation-axis t)
 (show *robot*)
 (transmit-posture *robot* t)
 
