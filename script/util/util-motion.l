@@ -59,34 +59,24 @@
     (let ((result nil))
       (dotimes (i (length lpos-seq) result)
         (let ((robot-tmp (copy-object robot-now)))
-          (print (elt rpos-seq i))
           (solve-ik! robot-tmp (elt rpos-seq i) rrpy :rarm :rotation-axis t)
           (solve-ik! robot-tmp (elt lpos-seq i) lrpy :larm :rotation-axis t)
-          (show robot-tmp)
-          (print (car (get-end-effector-state robot-tmp :larm)))
           (setq result (cons robot-tmp result))))
         (cut-list-from-start (reverse result) 1)
   )))
 
+(defun transmit-robot-sequence (robot robot-sequence &optional (duration 3000))
+  (dolist (r robot-sequence)
+    (progn 
+      (setq *robot* r)
+      (transmit-posture r t))))
 
-(setq rs (get-slidearm-robot-sequence *robot* 
-                                      :r-vec-slide #f(100 0 0)
-                                      :l-vec-slide #f(-300 0 0)
-                                      :n-split 3))
+;(setq rs (get-slidearm-robot-sequence *robot* 
+;                                      :r-vec-slide #f(100 0 0)
+;                                      :l-vec-slide #f(400 0 0)
+;                                      :n-split 3))
 
-(dolist (r rs)
-  (progn
-    (print "aaaa")
-    (setq *robot* r)
-    (transmit-posture r t)))
-
-
-
-
-
-
-;(setq a (get-slide-arm-robot-sequence *robot* #f(-10 0 0) :larm))
-
+;(transmit-robot-sequence *robot* rs 1000)
 
 
 

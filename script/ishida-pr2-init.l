@@ -13,5 +13,5 @@
     (send *robot* :r_upper_arm_roll_joint :joint-angle -40)
     (send *robot* :torso_lift_joint :joint-angle 100)
     )
-(robot-init!)
+(send *robot* :reset-pose)
 (transmit-posture *robot* t)
