@@ -18,7 +18,7 @@
   (send robot :inverse-kinematics (make-coords :pos pos :rpy rpy)
         :link-list (send robot :link-list (send robot which-arm :end-coords :parent))
         :move-target (send robot which-arm :end-coords)
-        :rotation-axis rotation-axis)
+        :rotation-axis rotation-axis))
 
 
 (defun show (robot)
