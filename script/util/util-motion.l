@@ -1,3 +1,4 @@
+
 (defun stop-grasp ()
   (send *ri* :stop-grasp))
 
@@ -13,7 +14,12 @@
           fn
           (cons (funcall fn top) result)))))
 
-(defun vector-waypoint (v-start v-end n-waypoint)
+(defun cut-list-from-start (lst s)
+  (if (= s 0)
+      lst
+      (cut-list-from-start (cdr lst) (- s 1))))
+
+(defun get-vector-waypoint (v-start v-end n-waypoint)
   (let* ((v-diff (v- v-end v-start))
          (v-diff-each (scale (/ 1.0 n-waypoint) v-diff)))
     (let ((result '()))
@@ -22,26 +28,52 @@
                        (v- v-end (scale (* 1.0 i) v-diff-each))
                        result))))))
 
-
-(defun get-slidearm-robot-sequence (robot-now vec-slide which-arm
-                                               &optional 
-                                               (n-split 5))
-  (let* ((coords-endeffector (send robot-now which-arm :end-coords))
+(defun get-end-effector-state (robot which-arm)
+  (let* ((coords-endeffector (send robot which-arm :end-coords))
          (rot-endeffector (send coords-endeffector :worldrot))
          (rpy-endeffector-tmp (car (rpy-angle rot-endeffector)))
          (rpy-endeffector (float-vector 
                             (elt rpy-endeffector-tmp 0)
                             (elt rpy-endeffector-tmp 1)
                             (elt rpy-endeffector-tmp 2)))
-         (pos-endeffector (send coords-endeffector :worldpos))
-         (pos-endeffector-seq (vector-waypoint pos-endeffector (v+ pos-endeffector vec-slide) n-split))
-         (av-seq (transform pos-endeffector-seq
-                            #'(lambda (pos) (solve-ik robot-now pos rpy-endeffector which-arm
-                                                      :rotation-axis t))))
-         )
-    av-seq))
+         (pos-endeffector (send coords-endeffector :worldpos)))
+    (list pos-endeffector rpy-endeffector)))
 
-(setq rs (get-slidearm-robot-sequence *robot* #f(300 0 0) :larm 2))
+
+
+(defun get-slidearm-robot-sequence (robot-now &key 
+                                              (r-vec-slide #f(0 0 0))
+                                              (l-vec-slide #f(0 0 0))
+                                              (n-split 5))
+  (let* (
+         (r-endeffector-state (get-end-effector-state robot-now :rarm))
+         (rpos (car r-endeffector-state))
+         (rrpy (car (cdr r-endeffector-state)))
+         (rpos-seq (get-vector-waypoint rpos (v+ rpos r-vec-slide) n-split))
+
+         (l-endeffector-state (get-end-effector-state robot-now :larm))
+         (lpos (car l-endeffector-state))
+         (lrpy (car (cdr l-endeffector-state)))
+         (lpos-seq (get-vector-waypoint lpos (v+ lpos l-vec-slide) n-split))
+         )
+    (let ((result nil))
+      (dotimes (i (length lpos-seq) result)
+        (let ((robot-tmp (copy-object robot-now)))
+          (print (elt rpos-seq i))
+          (solve-ik! robot-tmp (elt rpos-seq i) rrpy :rarm :rotation-axis t)
+          (solve-ik! robot-tmp (elt lpos-seq i) lrpy :larm :rotation-axis t)
+          (show robot-tmp)
+          (print (car (get-end-effector-state robot-tmp :larm)))
+          (setq result (cons robot-tmp result))))
+        (cut-list-from-start (reverse result) 1)
+  )))
+
+
+(setq rs (get-slidearm-robot-sequence *robot* 
+                                      :r-vec-slide #f(100 0 0)
+                                      :l-vec-slide #f(-300 0 0)
+                                      :n-split 3))
+
 (dolist (r rs)
   (progn
     (print "aaaa")

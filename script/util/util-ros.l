@@ -10,6 +10,17 @@
           :rotation-axis rotation-axis)
     robot-new))
 
+;with side effect 
+(defun solve-ik! (robot pos rpy which-arm
+                            &key
+                            (rotation-axis t)
+                            )
+  (send robot :inverse-kinematics (make-coords :pos pos :rpy rpy)
+        :link-list (send robot :link-list (send robot which-arm :end-coords :parent))
+        :move-target (send robot which-arm :end-coords)
+        :rotation-axis rotation-axis)
+
+
 (defun show (robot)
   (objects (list robot)))
 
