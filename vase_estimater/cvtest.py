@@ -2,6 +2,7 @@
 import rospy
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 import time
@@ -59,6 +60,19 @@ def compute_label_inverse(label):
         label_inverse[idx_label-1].append(idx_pixel) # note that label index starts from 1 ..
     return label_inverse
 #a = compute_label_inverse(vf.label)
+
+def filter_white(image):
+    im_size_x = image.shape[0]
+    im_size_y = image.shape[1]
+    for i in range(im_size_x):
+        for j in range(im_size_y):
+            hsi_i = sum(image[i][j])/3
+            if hsi_i < 240:
+                image[i][j] = np.array([0, 0, 0])
+    return image
+
+#imf = filter_white(vf.image)
+#plt.imshow(imf)
 
 vf = VaseFinder()
 rospy.spin()
