@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import cv2
+import numpy as np
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 import time
@@ -47,6 +48,24 @@ class VaseFinder:
         self.isDone = True
         print "done"
 
-VaseFinder()
+def compute_label_inverse(label):
+    n_cluster = np.max(label)
+    image_size_x = label.shape[0]
+    image_size_y = label.shape[1]
+    list_idx_pixel = [[i, j] for i in range(image_size_x) for j in range(image_size_y)]
+    label_inverse = [[] for i in range(n_cluster)]
+    for idx_pixel in list_idx_pixel:
+        idx_label = label[idx_pixel[0], idx_pixel[1]]
+        label_inverse[idx_label-1].append(idx_pixel) # note that label index starts from 1 ..
+    return label_inverse
+#a = compute_label_inverse(vf.label)
+
+vf = VaseFinder()
 rospy.spin()
+
+"""
+import pandas as pd
+import numpy as np
+from sklearn.cluster import KMeans
+"""
 
