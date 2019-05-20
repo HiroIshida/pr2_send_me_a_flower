@@ -1,0 +1,12 @@
+<launch>
+
+
+  <node name="slic_super_pixels"
+        pkg="jsk_perception" type="slic_super_pixels" >
+        <remap from="image" to="/kinect_head/rgb/image_color"/>
+        <param name="publish_debug_images" value="true" />
+        <param name="weight" value="60" />
+        <param name="number_of_super_pixels" value="100" />
+  </node>
+
+</launch>
