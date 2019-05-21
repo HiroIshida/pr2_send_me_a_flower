@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 execfile("sample_image.py")
 
 #img = cv2.imread("image/1_edge.png")
-#img = cv2.imread("image/1_edge.png")
-img = gen_sample_image()
+img = cv2.imread("image/1_edge.png")
+#img = gen_sample_image()
 
 
 def image_to_pixel_list(img):
@@ -96,7 +96,40 @@ def explore_connection(pixel_start, img, mat_isVisited):
     recursion(pixel_start)
     return pixel_connected_list
 
+
+
+def filter_lstlst(lstlst, predicate):
+    lstlst_new = []
+    for lst in lstlst:
+        if predicate(lst):
+            lstlst_new.append(lst)
+    return lstlst_new
+
+def gen_debug_img(img, lstlst):
+    nx = img.shape[0]
+    ny = img.shape[1]
+    mat_bool = np.zeros((nx, ny), dtype=bool)
+    for lst in lstlst:
+        for pixel in lst:
+            mat_bool[pixel[0]][pixel[1]] = True
+    debug_img = bool2image(mat_bool)
+    return debug_img
+
+
 lstlst = group_connected_pixel(img)
+lstlst_reduced = filter_lstlst(lstlst, (lambda lst: (len(lst)<200)*(len(lst)>20)))
+img_debug = gen_debug_img(img, lstlst_reduced)
+plt.imshow(img_debug)
+plt.show()
+
+
+
+
+
+
+#lstlst_new = filter_smallsize_list(lstlst, 20)
+
+
 
 
 
