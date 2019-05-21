@@ -1,9 +1,12 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+execfile("sample_image.py")
 
 #img = cv2.imread("image/1_edge.png")
-img = cv2.imread("image/1_edge.png")
+#img = cv2.imread("image/1_edge.png")
+img = gen_sample_image()
+
 
 def image_to_pixel_list(img):
     dim_x = img.shape[0]
@@ -15,8 +18,6 @@ def isWhite(rgb):
     if sum(rgb)==255*3:
         return True
     return False
-
-
 
 def isWhity(rgb):
     #i_hsi = sum(rgb)/3
@@ -47,16 +48,18 @@ def fuck(img):
     dimx = img.shape[0]
     dimy = img.shape[1]
     mat_isVisited = np.zeros((dimx, dimy), dtype=bool)
+    pixel_connected_list_list = []
     for pixel in image_to_pixel_list(img):
         nx = pixel[0]
         ny = pixel[1]
         if not mat_isVisited[nx][ny]:
             mat_isVisited[nx][ny] = True
             if isWhite(img[nx][ny]):
-                explore_connection_recursion(pixel, img, mat_isVisited)
+                pixel_connected_list = explore_connection(pixel, img, mat_isVisited)
+                pixel_connected_list_list.append(pixel_connected_list)
+    return pixel_connected_list_list
 
-def explore_connection_recursion(pixel_start, img, mat_isVisited):
-    mat_isVisited[pixel_start[0]][pixel_start[1]] = True
+def explore_connection(pixel_start, img, mat_isVisited):
     dimx = img.shape[0]
     dimy = img.shape[1]
 
@@ -71,27 +74,29 @@ def explore_connection_recursion(pixel_start, img, mat_isVisited):
             return False
         return True
 
-    def isExtendable(pixel):
-        # order is important
-        if not isInside(pixel):
-            return False
-        if not mat_isVisited[pixel[0]][pixel[1]]:
-            return False
-        return True
+    pixel_connected_list = []
+    def recursion(pixel):
+        mat_isVisited[pixel[0]][pixel[1]] = True
+        pixel_connected_list.append(pixel)
+        def isExtendable(pixel):
+            # order is important
+            if not isInside(pixel):
+                return False
+            if mat_isVisited[pixel[0]][pixel[1]]:
+                return False
+            if not isWhite(img[pixel[0]][pixel[1]]):
+                return False
+            return True
+        pixel_candidate_list = [[pixel[0]+i, pixel[1]+j] for i in [-1, 0, 1] for j in [-1, 0, 1]]
+        for pixel in pixel_candidate_list:
+            if isExtendable(pixel):
+                recursion(pixel)
+            else:
+                return
+    recursion(pixel_start)
+    return pixel_connected_list
 
-    def pixel_list_candidate(pixel): 
-        a = [pixel[0]+1, pixel[1]+0]
-        b = [pixel[0]-1, pixel[1]+0]
-        c = [pixel[0]+0, pixel[1]+1]
-        d = [pixel[0]+0, pixel[1]-1]
-        return [a, b, c, d]
-
-    for pixel in pixel_list_candidate(pixel_start):
-        if isExtendable(pixel):
-            explore_connection_recursion(pixel, img, mat_isVisited)
-        else:
-            return
-
+lstlst = fuck(img)
 #lst = image_to_pixel_list(img)
 #mat = np.zeros((img.shape[0], img.shape[1]), dtype=bool)
 
@@ -102,7 +107,24 @@ def explore_connection_recursion(pixel_start, img, mat_isVisited):
 
 
 
-fuck(img)
+
+
+"""
+def transform_mat(mat_, operation):
+    mat = np.copy(img)
+    for i in range(mat.shape[0]):
+        for j in range(mat.shape[1]):
+            mat[i][j] = operation(mat_[i][j])
+    return mat
+
+def f(b):
+    if b:
+        return np.array([255, 255, 255])
+    else:
+        return np.array([0, 0, 0])
+
+matimg = transform_mat(mat, f)
+"""
 
 
 
