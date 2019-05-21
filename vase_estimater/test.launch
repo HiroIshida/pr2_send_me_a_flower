@@ -12,9 +12,8 @@
     <arg name="image" value="/image"/>
     <arg name="canny_threshold2" value="100"/>
     <arg name="edge_type" value="2"/>
-    <arg name="debug_view" value="$(arg debug_view)"/>
+    <arg name="debug_view" value="false"/>
   </include>
-
 
   <node name="slic_super_pixels"
         pkg="jsk_perception" type="slic_super_pixels" >
@@ -24,10 +23,17 @@
         <param name="number_of_super_pixels" value="100" />
   </node>
 
-  <node name="slic_image_view"
+  <node name="image_view_slic"
     pkg="image_view" type="image_view"
     if="$(arg debug_view)">
     <remap from="image" to="slic_super_pixels/debug" />
   </node>
+
+  <node name="image_view_edge"
+    pkg="image_view" type="image_view"
+    if="$(arg debug_view)">
+    <remap from="image" to="/edge_detection/image" />
+  </node>
+
 
 </launch>
