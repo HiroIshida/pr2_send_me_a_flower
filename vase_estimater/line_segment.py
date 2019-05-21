@@ -44,11 +44,11 @@ def fill(img, predicate):
     return img_filled
 
 
-def fuck(img):
+def group_connected_pixel(img):
     dimx = img.shape[0]
     dimy = img.shape[1]
     mat_isVisited = np.zeros((dimx, dimy), dtype=bool)
-    pixel_connected_list_list = []
+    group_pixel = []
     for pixel in image_to_pixel_list(img):
         nx = pixel[0]
         ny = pixel[1]
@@ -56,8 +56,8 @@ def fuck(img):
             mat_isVisited[nx][ny] = True
             if isWhite(img[nx][ny]):
                 pixel_connected_list = explore_connection(pixel, img, mat_isVisited)
-                pixel_connected_list_list.append(pixel_connected_list)
-    return pixel_connected_list_list
+                group_pixel.append(pixel_connected_list)
+    return group_pixel
 
 def explore_connection(pixel_start, img, mat_isVisited):
     dimx = img.shape[0]
@@ -75,6 +75,7 @@ def explore_connection(pixel_start, img, mat_isVisited):
         return True
 
     pixel_connected_list = []
+
     def recursion(pixel):
         mat_isVisited[pixel[0]][pixel[1]] = True
         pixel_connected_list.append(pixel)
@@ -87,53 +88,15 @@ def explore_connection(pixel_start, img, mat_isVisited):
             if not isWhite(img[pixel[0]][pixel[1]]):
                 return False
             return True
+
         pixel_candidate_list = [[pixel[0]+i, pixel[1]+j] for i in [-1, 0, 1] for j in [-1, 0, 1]]
         for pixel in pixel_candidate_list:
             if isExtendable(pixel):
                 recursion(pixel)
-            else:
-                return
     recursion(pixel_start)
     return pixel_connected_list
 
-lstlst = fuck(img)
-#lst = image_to_pixel_list(img)
-#mat = np.zeros((img.shape[0], img.shape[1]), dtype=bool)
+lstlst = group_connected_pixel(img)
 
-
-
-
-
-
-
-
-
-
-"""
-def transform_mat(mat_, operation):
-    mat = np.copy(img)
-    for i in range(mat.shape[0]):
-        for j in range(mat.shape[1]):
-            mat[i][j] = operation(mat_[i][j])
-    return mat
-
-def f(b):
-    if b:
-        return np.array([255, 255, 255])
-    else:
-        return np.array([0, 0, 0])
-
-matimg = transform_mat(mat, f)
-"""
-
-
-
-
-
-#pixel_list_extracted = extract_pixel(img, isWhity)
-#a = pixel_list_extracted
-#img_filled = fill(img, isWhity)
-#plt.imshow(img_filled)
-#plt.show()
 
 
