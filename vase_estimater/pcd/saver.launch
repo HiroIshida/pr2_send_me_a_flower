@@ -1,9 +1,19 @@
 <launch>
 
   <arg name="INPUT" value="/kinect_head/depth_registered/points" />
+
+  <node name="tf_pointcloud" type="nodelet" pkg="nodelet"
+    args="standalone jsk_pcl/TfTransformCloud" output="screen">
+    <remap from="~input" to="$(arg INPUT)"/>
+    <remap from="~output" to="/tf_pcl_output"/>
+    <rosparam>
+      target_frame_id: base_link
+    </rosparam>
+  </node>
+
   <node name="sample_pointcloud_to_pcd" type="nodelet" pkg="nodelet"
-        args="standalone jsk_pcl_utils/PointCloudToPCD" output="screen" >
-    <remap from="~input" to="$(arg INPUT)" />
+    args="standalone jsk_pcl_utils/PointCloudToPCD" output="screen" >
+    <remap from="~input" to="/tf_pcl_output" />
     <rosparam subst_value="true">
       prefix: $(find pr2_send_flower)/vase_estimater/pcd/data_
       duration: 10
