@@ -46,11 +46,21 @@ def gen_hsi_filter(h_bound, s_bound, i_bound):
         return True
     return hsi_filter
 
-img1 = cv2.imread("img_pre.png")
-img2 = cv2.imread("img_post.png")
+def evaluatedif(img1, img2):
+    img_dif = img1 - img2
+    cost = 0
+    for pixel in image_to_pixel_list(img_dif):
+        rgb = img_dif[pixel[0]][pixel[1]]
+        if sum(rgb)!=0:
+            cost += 1
+    return cost
+
+
+img1 = cv2.imread("image/pre.png")
+img2 = cv2.imread("image/post_with_move.png")
 img1_ = convert_bf(img1, gen_hsi_filter([-inf, inf], [0.3, 1], [0.5, 0.8]))
 img2_ = convert_bf(img2, gen_hsi_filter([-inf, inf], [0.3, 1], [0.5, 0.8]))
-img_dif = img1_ - img2_
-plt.imshow(img_dif)
-plt.show()
+cost = evaluatedif(img1_, img2_)
+#plt.imshow(img_dif)
+#plt.show()
 
