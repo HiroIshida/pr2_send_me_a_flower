@@ -1,0 +1,13 @@
+<launch>
+
+  <arg name="INPUT" value="/kinect_head/depth_registered/points" />
+  <node name="sample_pointcloud_to_pcd" type="nodelet" pkg="nodelet"
+        args="standalone jsk_pcl_utils/PointCloudToPCD" output="screen" >
+    <remap from="~input" to="$(arg INPUT)" />
+    <rosparam subst_value="true">
+      prefix: $(find pr2_send_flower)/vase_estimater/pcd/data_
+      duration: 10
+    </rosparam>
+  </node> 
+</launch>
+
