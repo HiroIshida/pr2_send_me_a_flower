@@ -1,10 +1,14 @@
 <launch>
+  <arg name="n" default="1"/>
     <node name="pointcloud_database_server" pkg="nodelet" type="nodelet"
         args="standalone jsk_pcl/PointcloudDatabaseServer" >
         <rosparam subst_value="true">
-          models: ["$(find pr2_send_flower)/vase_estimater/pcd/data.pcd"]
+          models: ["$(find pr2_send_flower)/vase_estimater/pcd/data$(arg n).pcd"]
           duration: 0.05
           use_array: false
         </rosparam>
     </node>
+    <node name="point_cloud_test_rviz" pkg="rviz" type="rviz"
+    args="-d $(find pr2_send_flower)/vase_estimater/config/pcd_config.rviz"/>
+
 </launch>
