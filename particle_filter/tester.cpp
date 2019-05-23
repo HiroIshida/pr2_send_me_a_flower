@@ -10,14 +10,16 @@
 //http://wiki.ros.org/cv_bridge/Tutorials/UsingCvBridgeToConvertBetweenROSImagesAndOpenCVImages
 // write by lambda
 //https://stackoverflow.com/questions/45340189/ros-use-lambda-as-callback-in-nodehandle-subscribe
-//
+
 boost::function<void(const sensor_msgs::Image&)> gen_callback(){
   cv::Mat img_ref = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
+
   auto cb = [&](const sensor_msgs::Image& img){
-    cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::BGR8);
-    //int cost = compute_cost(img_ref, img);
-    
+    cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::BGR8);
+    int cost = compute_cost(img_ref, cv_ptr->image);
+    std::cout<< cost <<std::endl;
   };
+
   return cb;
 }
 
@@ -35,7 +37,7 @@ int main(int argc, char **argv)
     [&](const sensor_msgs::Image& msg){
       std::cout<<"aaa"<<std::endl;
     };
-  auto sub = n.subscribe<sensor_msgs::Image>("/kinect_head/rgb/image_raw", 1000, callback);
+  auto sub = n.subscribe<sensor_msgs::Image>("/kinect_head/rgb/image_raw", 1000, gen_callback());
   ros::spin();
   return 0;
 }
