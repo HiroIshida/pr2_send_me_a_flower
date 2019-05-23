@@ -39,7 +39,7 @@ std::function<bool(cv::Vec3b)> gen_hsi_filter(
     float s_min, float s_max,
     float i_min, float i_max)
 {
-  auto predicate = [&](cv::Vec3b bgr){
+  auto predicate = [=](cv::Vec3b bgr){
     auto hsi = bgr2hsi(bgr);
     float h = hsi.val[0];
     float s = hsi.val[1];
