@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_generation
   )
+find_package(OpenCV REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -109,7 +110,9 @@ catkin_package(
   #INCLUDE_DIRS include
 #  LIBRARIES pr2_send_flower
   CATKIN_DEPENDS rospy std_msgs geometry_msgs
+  DEPENDS OpenCV
 #  DEPENDS system_lib
+
 )
 
 ###########
@@ -118,10 +121,10 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
+#include_directories(
 # include
-# ${catkin_INCLUDE_DIRS}
-)
+#${catkin_INCLUDE_DIRS}
+#)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -198,6 +201,8 @@ include_directories(
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
-
+#pkg-config --cflags opencv` `pkg-config --libs opencv
+include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}})
+add_executable(tester particle_filter/tester.cpp)
+target_link_libraries(tester ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_definitions(-std=c++11)
