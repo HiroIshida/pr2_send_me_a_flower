@@ -2,37 +2,8 @@
 //https://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#vec
 // find data type of mat in opencv
 // https://codeyarns.com/2015/08/27/depth-and-type-of-matrix-in-opencv/
-#include <opencv2/opencv.hpp>
-#include <iostream>
-#include <functional>
-#include <cmath>
-#define print(a) cout<<a<<endl
-using namespace std;
 
-cv::Vec3f bgr2hsi(cv::Vec3b bgr);
-cv::Mat convert_bf(const cv::Mat& img, std::function<bool(cv::Vec3b)> predicate);
-int compute_cost(cv::Mat img1, cv::Mat img2);
-std::function<bool(cv::Vec3b)> gen_hsi_filter(
-    float h_min, float h_max,
-    float s_min, float s_max,
-    float i_min, float i_max);
-
-int main()
-{ 
-  auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.8);
-  cv::Mat img1 = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
-  cv::Mat img2 = cv::imread("image/post_without_move.png", CV_LOAD_IMAGE_COLOR);
-  cv::Mat img1_filtered = convert_bf(img1, predicate);
-  cv::Mat img2_filtered = convert_bf(img2, predicate);
-  int cost = compute_cost(img1_filtered, img2_filtered);
-  print(cost);
-
-  /*
-  cv::namedWindow("Image", CV_WINDOW_AUTOSIZE);
-  cv::imshow("Image", img_gray);
-  cv::waitKey();
-  */
-}
+#include "image_dif.hpp"
 
 cv::Vec3f bgr2hsi(cv::Vec3b bgr)
 {
