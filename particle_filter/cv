@@ -1,2 +1,3 @@
-g++ -std=c++11 image_dif.cpp -o exe `pkg-config --cflags opencv` `pkg-config --libs opencv`
+g++ -std=c++11 -O3 image_dif.cpp -o exe `pkg-config --cflags opencv` `pkg-config --libs opencv`
+
 

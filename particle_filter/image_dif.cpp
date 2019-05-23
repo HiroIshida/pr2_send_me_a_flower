@@ -1,21 +1,31 @@
+// about data type, (eg. what does CV_64S1 referes to )
+//https://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#vec
+// find data type of mat in opencv
+// https://codeyarns.com/2015/08/27/depth-and-type-of-matrix-in-opencv/
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <functional>
 #include <cmath>
 #define print(a) cout<<a<<endl
 using namespace std;
+
 cv::Vec3f bgr2hsi(cv::Vec3b bgr);
+cv::Mat convert_bf(const cv::Mat& img, std::function<bool(cv::Vec3b)> predicate);
+std::function<bool(cv::Vec3b)> gen_hsi_filter(
+    float h_min, float h_max,
+    float s_min, float s_max,
+    float i_min, float i_max);
+
 int main()
-{ cv::Mat img = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
-  for (int i = 0; i<img.rows; i++){
-    for (int j = 0; j<img.rows; j++){
-      auto bgr = img.at<cv::Vec3b>(i, j);
-      auto hsi = bgr2hsi(bgr);
-      print(hsi.val[2]);
-    }
-  }
+{ 
+  cv::Mat img = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
+  auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.8);
+  cv::Mat img_gray = convert_bf(img, predicate);
+  cv::namedWindow("Image", CV_WINDOW_AUTOSIZE);
+  cv::imshow("Image", img_gray);
+  cv::waitKey();
 }
 
-//https://docs.opencv.org/2.4/modules/core/doc/basic_structures.html#vec
 cv::Vec3f bgr2hsi(cv::Vec3b bgr)
 {
   float B = bgr.val[0]/255.0;
@@ -30,3 +40,40 @@ cv::Vec3f bgr2hsi(cv::Vec3b bgr)
   cv::Vec3f hsi(H, S, I);
   return hsi;
 }
+
+cv::Mat convert_bf(const cv::Mat& img, std::function<bool(cv::Vec3b)> predicate)
+{
+  cv::Mat img_bf(img.rows, img.cols, CV_8UC3); // CV_8UC3 really?
+  for (int i = 0; i < img.rows; i++){
+    for (int j = 0; j < img.cols; j++){
+      auto bgr = img.at<cv::Vec3b>(i, j);
+      auto bgr_white = cv::Vec3b(255, 255, 255);
+      auto bgr_black = cv::Vec3b(0, 0, 0);
+      img_bf.at<cv::Vec3b>(i, j) = predicate(bgr) ? bgr_white : bgr_black;
+    }
+  }
+  return img_bf;
+}
+
+std::function<bool(cv::Vec3b)> gen_hsi_filter(
+    float h_min, float h_max,
+    float s_min, float s_max,
+    float i_min, float i_max)
+{
+  auto predicate = [&](cv::Vec3b bgr){
+    auto hsi = bgr2hsi(bgr);
+    float h = hsi.val[0];
+    float s = hsi.val[1];
+    float i = hsi.val[2];
+    if(h < h_min || h_max < h) {return false;};
+    if(s < s_min || s_max < s) {return false;};
+    if(i < i_min || i_max < i) {return false;};
+    return true;
+  };
+  return predicate;
+}
+
+
+
+
+
