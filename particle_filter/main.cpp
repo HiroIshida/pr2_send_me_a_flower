@@ -7,6 +7,7 @@ int main()
   cv::Mat img1_filtered = convert_bf(img1, predicate);
   cv::Mat img2_filtered = convert_bf(img2, predicate);
   int cost = compute_cost(img1_filtered, img2_filtered);
+  std::cout<<cost<<std::endl;
 
   //cv::namedWindow("Image", CV_WINDOW_AUTOSIZE);
   //cv::imshow("Image", img_gray);

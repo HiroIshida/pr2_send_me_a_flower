@@ -2,9 +2,24 @@
 #include "std_msgs/String.h"
 #include "sensor_msgs/Image.h"
 #include <sstream>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 #include "image_dif.hpp"
 #include <boost/function.hpp> 
+// write by class
+//http://wiki.ros.org/cv_bridge/Tutorials/UsingCvBridgeToConvertBetweenROSImagesAndOpenCVImages
+// write by lambda
 //https://stackoverflow.com/questions/45340189/ros-use-lambda-as-callback-in-nodehandle-subscribe
+//
+boost::function<void(const sensor_msgs::Image&)> gen_callback(){
+  cv::Mat img_ref = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
+  auto cb = [&](const sensor_msgs::Image& img){
+    cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::BGR8);
+    //int cost = compute_cost(img_ref, img);
+    
+  };
+  return cb;
+}
 
 int main(int argc, char **argv)
 { 
