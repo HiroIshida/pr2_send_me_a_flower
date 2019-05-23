@@ -52,7 +52,7 @@ std::function<bool(cv::Vec3b)> gen_hsi_filter(
   return predicate;
 }
 
-int compute_cost(cv::Mat img1, cv::Mat img2)
+int compute_cost(const cv::Mat& img1, const cv::Mat& img2)
 {
   int cost = 0;
   for (int i = 0; i < img1.rows; i++){

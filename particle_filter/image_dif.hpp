@@ -6,7 +6,7 @@
 
 cv::Vec3f bgr2hsi(cv::Vec3b bgr);
 cv::Mat convert_bf(const cv::Mat& img, std::function<bool(cv::Vec3b)> predicate);
-int compute_cost(cv::Mat img1, cv::Mat img2);
+int compute_cost(const cv::Mat& img1, const cv::Mat& img2);
 std::function<bool(cv::Vec3b)> gen_hsi_filter(
     float h_min, float h_max,
     float s_min, float s_max,
