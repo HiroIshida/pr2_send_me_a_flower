@@ -203,6 +203,8 @@ catkin_package(
 
 #pkg-config --cflags opencv` `pkg-config --libs opencv
 include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}})
-add_executable(tester particle_filter/tester.cpp)
+add_library(${PROJECT_NAME} particle_filter/image_dif.cpp)
+#add_library(mylib STATIC /particle_filter/image_dif.cpp)
+add_executable(tester particle_filter/tester.cpp particle_filter/image_dif.cpp)
 target_link_libraries(tester ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_definitions(-std=c++11)
