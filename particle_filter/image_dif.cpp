@@ -11,6 +11,7 @@ using namespace std;
 
 cv::Vec3f bgr2hsi(cv::Vec3b bgr);
 cv::Mat convert_bf(const cv::Mat& img, std::function<bool(cv::Vec3b)> predicate);
+int compute_cost(cv::Mat img1, cv::Mat img2);
 std::function<bool(cv::Vec3b)> gen_hsi_filter(
     float h_min, float h_max,
     float s_min, float s_max,
@@ -18,12 +19,19 @@ std::function<bool(cv::Vec3b)> gen_hsi_filter(
 
 int main()
 { 
-  cv::Mat img = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
   auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.8);
-  cv::Mat img_gray = convert_bf(img, predicate);
+  cv::Mat img1 = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
+  cv::Mat img2 = cv::imread("image/post_without_move.png", CV_LOAD_IMAGE_COLOR);
+  cv::Mat img1_filtered = convert_bf(img1, predicate);
+  cv::Mat img2_filtered = convert_bf(img2, predicate);
+  int cost = compute_cost(img1_filtered, img2_filtered);
+  print(cost);
+
+  /*
   cv::namedWindow("Image", CV_WINDOW_AUTOSIZE);
   cv::imshow("Image", img_gray);
   cv::waitKey();
+  */
 }
 
 cv::Vec3f bgr2hsi(cv::Vec3b bgr)
@@ -65,12 +73,25 @@ std::function<bool(cv::Vec3b)> gen_hsi_filter(
     float h = hsi.val[0];
     float s = hsi.val[1];
     float i = hsi.val[2];
-    if(h < h_min || h_max < h) {return false;};
-    if(s < s_min || s_max < s) {return false;};
-    if(i < i_min || i_max < i) {return false;};
+    if(h < h_min || h_max < h) {return false;}
+    if(s < s_min || s_max < s) {return false;}
+    if(i < i_min || i_max < i) {return false;}
     return true;
   };
   return predicate;
+}
+
+int compute_cost(cv::Mat img1, cv::Mat img2)
+{
+  int cost = 0;
+  for (int i = 0; i < img1.rows; i++){
+    for (int j = 0; j < img1.cols; j++){
+      auto bgr1 = img1.at<cv::Vec3b>(i, j);
+      auto bgr2 = img2.at<cv::Vec3b>(i, j);
+      if (cv::sum(bgr1) != cv::sum(bgr2)){cost++;}
+    }
+  }
+  return cost;
 }
 
 
