@@ -28,16 +28,20 @@
         pos-vec
         ))
 
-(setq pos-rarm (v+ pos-flower #f(0 -150 30)))
+(ros::wait-for-service "trigger_change_detector_init")
+(setq req (instance std_srvs::EmptyRequest :init))
+(ros::service-call "trigger_change_detector_init" req)
+
+;(setq pos-rarm (v+ pos-flower #f(0 -150 30)))
 
 ; leave for once
-(setq pos-rarm (v+ pos-rarm #f(0 -80 0)))
-(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rarm :rotation-axis t)
-(show *robot*)
-(transmit-posture *robot*)
+;(setq pos-rarm (v+ pos-rarm #f(0 -80 0)))
+;(solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rarm :rotation-axis t)
+;(show *robot*)
+;(transmit-posture *robot*)
 
 ; attack pose
-(solve-ik! *robot* pos-rarm #f(1.57 0.3 0) :rarm :rotation-axis t)
-(show *robot*)
-(transmit-posture *robot*)
-(send *ri* :start-grasp)
+;(solve-ik! *robot* pos-rarm #f(1.57 0.3 0) :rarm :rotation-axis t)
+;(show *robot*)
+;(transmit-posture *robot*)
+;(send *ri* :start-grasp)
