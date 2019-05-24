@@ -11,8 +11,8 @@
 // write by lambda
 //https://stackoverflow.com/questions/45340189/ros-use-lambda-as-callback-in-nodehandle-subscribe
 
-boost::function<void(const sensor_msgs::Image&)> gen_callback(){
-  //cv::Mat img_ref = cv::imread("/home/h-ishida/catkin_ws/src/pr2_send_me_a_flower/particle_filter/image/pre.png", CV_LOAD_IMAGE_COLOR);
+// note that cannot use std::function beacause ros uses boost
+boost::function<void(const sensor_msgs::Image&)> gen_callback(ros::Publisher pub_image){
   auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.8);
   cv::Mat img_filtered_referece;
   bool isInit = true;
@@ -25,8 +25,11 @@ boost::function<void(const sensor_msgs::Image&)> gen_callback(){
       img_filtered_referece = img_filtered_received;
       isInit = false;
     }else{
-      int cost = compute_cost(img_filtered_referece, img_filtered_received);
-      std::cout<<cost<<std::endl;
+      //int cost = compute_cost(img_filtered_referece, img_filtered_received);
+      auto img_diff = diff_image(img_filtered_referece, img_filtered_received);
+      sensor_msgs::ImagePtr msg_debug = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_diff).toImageMsg();
+      pub_image.publish(msg_debug);
+      std::cout << "published" << std::endl;
     }
   };
 
@@ -41,7 +44,8 @@ int main(int argc, char **argv)
     [&](const sensor_msgs::Image& msg){
       std::cout<<"aaa"<<std::endl;
     };
-  auto sub = n.subscribe<sensor_msgs::Image>("/kinect_head/rgb/image_raw", 1000, gen_callback());
+  ros::Publisher pub = n.advertise<sensor_msgs::Image>("/debug_image", 1000);
+  ros::Subscriber sub = n.subscribe<sensor_msgs::Image>("/kinect_head/rgb/image_raw", 1000, gen_callback(pub));
   ros::spin();
   return 0;
 }
