@@ -14,14 +14,16 @@
 class ChangeDetector {
 
   ros::NodeHandle nh;
-  ros::Publisher pub_cost, pub_image;
+  ros::Publisher pub_cost, pub_cost_diff, pub_image;
   ros::Subscriber sub_image;
   ros::ServiceServer service_init;
 
   int cost_reference;
+  int cost_pre;
   cv::Mat img_reference;
   bool isInit_ref_image;
   bool isInit_ref_cost;
+  bool isInit_cost_pre;
 
 public:
     ChangeDetector();
@@ -32,12 +34,14 @@ private:
 };
 
 ChangeDetector::ChangeDetector(){
-  pub_cost = nh.advertise<std_msgs::Int64>("/cost_image_diff", 1);
+  pub_cost = nh.advertise<std_msgs::Int64>("/cost", 1);
+  pub_cost_diff = nh.advertise<std_msgs::Int64>("/cost_diff", 1);
   pub_image = nh.advertise<sensor_msgs::Image>("/debug_image", 1);
   sub_image = nh.subscribe("/kinect_head/rgb/image_raw", 1, &ChangeDetector::callback, this);
   service_init = nh.advertiseService("trigger_change_detector_init", &ChangeDetector::req_handler, this);
   isInit_ref_image = true;
   isInit_ref_cost = true;
+  isInit_cost_pre = true;
 }
 
 bool ChangeDetector::req_handler(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
@@ -45,6 +49,7 @@ bool ChangeDetector::req_handler(std_srvs::Empty::Request& req, std_srvs::Empty:
   ROS_INFO("received trigger");
   isInit_ref_image = true;
   isInit_ref_cost = true;
+  isInit_cost_pre = true;
 }
 
 void ChangeDetector::callback(const sensor_msgs::Image& msg)
@@ -55,7 +60,9 @@ void ChangeDetector::callback(const sensor_msgs::Image& msg)
   if(isInit_ref_image){
     img_reference = img_received;
     isInit_ref_image = false;
+
   }else{
+
     int cost = compute_cost(img_reference, img_received);
 
     if(isInit_ref_cost){
@@ -63,12 +70,25 @@ void ChangeDetector::callback(const sensor_msgs::Image& msg)
       isInit_ref_cost = false;
 
     }else{
-      auto img_diff = diff_image(img_reference, img_received);
-      sensor_msgs::ImagePtr msg_debug = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_diff).toImageMsg();
-      std_msgs::Int64 msg_cost;
-      msg_cost.data = abs(cost - cost_reference);
-      pub_image.publish(msg_debug);
-      pub_cost.publish(msg_cost);
+
+      if(isInit_cost_pre){
+        cost_pre = cost;
+        isInit_cost_pre = false;
+
+      }else{
+        auto img_diff = diff_image(img_reference, img_received);
+        sensor_msgs::ImagePtr msg_debug = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_diff).toImageMsg();
+        std_msgs::Int64 msg_cost, msg_cost_diff;
+        msg_cost.data = abs(cost - cost_reference);
+
+        int cost_diff = abs(cost - cost_pre);
+        msg_cost_diff.data = cost_diff;
+        pub_image.publish(msg_debug);
+        pub_cost.publish(msg_cost);
+        pub_cost_diff.publish(msg_cost_diff);
+
+        cost_pre = cost;
+      }
     }
   }
 }
