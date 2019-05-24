@@ -86,7 +86,7 @@ cv::Mat diff_image(const cv::Mat& img1, const cv::Mat& img2)//tmp
       auto bgr2 = img2.at<cv::Vec3b>(i, j);
       auto bgr_white = cv::Vec3b(255, 255, 255);
       auto bgr_black = cv::Vec3b(0, 0, 0);
-      img_diff.at<cv::Vec3b>(i, j) = cv::sum(bgr1) == cv::sum(bgr2) ? bgr_white : bgr_black;
+      img_diff.at<cv::Vec3b>(i, j) = cv::sum(bgr1) == cv::sum(bgr2) ? bgr_black : bgr_white;
     }
   }
   return img_diff;
