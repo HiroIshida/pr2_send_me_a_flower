@@ -62,7 +62,7 @@ bool ChangeDetector::req_handler(std_srvs::Empty::Request& req, std_srvs::Empty:
 void ChangeDetector::callback(const sensor_msgs::Image& msg)
 {
   cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-  auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.88);
+  auto predicate = gen_hsi_filter(0.0, 1.0, 0.3, 1.0, 0.5, 0.88);
   auto img_received = convert_bf(cv_ptr->image, predicate);
   if(isInit_ref_image){
     img_reference = img_received;
@@ -89,6 +89,8 @@ void ChangeDetector::callback(const sensor_msgs::Image& msg)
 
         int cost_diff = abs(cost - cost_reference);
         max_cost_diff = (cost_diff > max_cost_diff) ? cost_diff : max_cost_diff;
+        std::cout<<"dif: " << cost_diff << std::endl;
+        std::cout<<"max: " << max_cost_diff << std::endl;
 
         msg_cost.data = cost_diff;
         msg_cost_diff.data = cost_diff;
