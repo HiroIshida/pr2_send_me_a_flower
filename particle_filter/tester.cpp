@@ -11,7 +11,6 @@
 //http://wiki.ros.org/cv_bridge/Tutorials/UsingCvBridgeToConvertBetweenROSImagesAndOpenCVImages
 // write by lambda
 //https://stackoverflow.com/questions/45340189/ros-use-lambda-as-callback-in-nodehandle-subscribe
-
 // note that cannot use std::function beacause ros uses boost
 boost::function<void(const sensor_msgs::Image&)> gen_callback(
     ros::Publisher pub_image,
@@ -40,7 +39,7 @@ boost::function<void(const sensor_msgs::Image&)> gen_callback(
         auto img_diff = diff_image(img_filtered_referece, img_filtered_received);
         sensor_msgs::ImagePtr msg_debug = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_diff).toImageMsg();
         std_msgs::Int64 msg_cost;
-        msg_cost.data = cost - cost_reference;
+        msg_cost.data = abs(cost - cost_reference);
         pub_image.publish(msg_debug);
         pub_cost.publish(msg_cost);
       }
