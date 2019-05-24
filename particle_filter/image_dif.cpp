@@ -54,6 +54,11 @@ std::function<bool(cv::Vec3b)> gen_hsi_filter(
 
 int compute_cost(const cv::Mat& img1, const cv::Mat& img2)
 {
+  if(!isSameSize(img1, img2)){
+    std::cout<<"two images size are different..."<<std::endl;
+    std::cout<<"img1:"<< img1.cols << std::endl;
+    std::cout<<"img2:"<< img2.cols << std::endl;
+  }
   int cost = 0;
   for (int i = 0; i < img1.rows; i++){
     for (int j = 0; j < img1.cols; j++){
@@ -63,6 +68,13 @@ int compute_cost(const cv::Mat& img1, const cv::Mat& img2)
     }
   }
   return cost;
+}
+
+bool isSameSize(const cv::Mat& img1, const cv::Mat& img2)
+{
+  if (img1.cols != img2.cols){return false;}
+  if (img1.rows != img2.rows){return false;}
+  return true;
 }
 
 
