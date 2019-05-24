@@ -13,6 +13,7 @@
     (send *robot* :l_upper_arm_roll_joint :joint-angle 40)
     (send *robot* :r_upper_arm_roll_joint :joint-angle -40)
     (send *robot* :torso_lift_joint :joint-angle 100)
+    (send *robot* :head_tilt_joint :joint-angle 70)
     )
 (robot-init!)
 (show *robot*)
