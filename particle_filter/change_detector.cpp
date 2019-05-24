@@ -18,8 +18,8 @@ class ChangeDetector {
   ros::Subscriber sub_image;
   ros::ServiceServer service_init;
 
-  int cost_ref;
-  cv::Mat img_ref;
+  int cost_reference;
+  cv::Mat img_reference;
   bool isInit_ref_image;
   bool isInit_ref_cost;
 
@@ -34,7 +34,7 @@ private:
 ChangeDetector::ChangeDetector(){
   pub_cost = nh.advertise<std_msgs::Int64>("/cost_image_diff", 1);
   pub_image = nh.advertise<sensor_msgs::Image>("/debug_image", 1);
-  sub_image = nh.subscribe("/kinect_head/rgb/image_raw", 1000, &ChangeDetector::callback, this);
+  sub_image = nh.subscribe("/kinect_head/rgb/image_raw", 1, &ChangeDetector::callback, this);
   service_init = nh.advertiseService("init_triger", &ChangeDetector::triger, this);
   isInit_ref_image = true;
   isInit_ref_cost = true;
@@ -49,8 +49,27 @@ bool ChangeDetector::triger(std_srvs::Empty::Request& req, std_srvs::Empty::Resp
 void ChangeDetector::callback(const sensor_msgs::Image& msg)
 {
   cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-  auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.8);
-  auto image_recieved = convert_bf(cv_ptr->image, predicate);
+  auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.88);
+  auto img_received = convert_bf(cv_ptr->image, predicate);
+  if(isInit_ref_image){
+    img_reference = img_received;
+    isInit_ref_image = false;
+  }else{
+    int cost = compute_cost(img_reference, img_received);
+
+    if(isInit_ref_cost){
+      cost_reference = cost;
+      isInit_ref_cost = false;
+
+    }else{
+      auto img_diff = diff_image(img_reference, img_received);
+      sensor_msgs::ImagePtr msg_debug = cv_bridge::CvImage(std_msgs::Header(), "bgr8", img_diff).toImageMsg();
+      std_msgs::Int64 msg_cost;
+      msg_cost.data = abs(cost - cost_reference);
+      pub_image.publish(msg_debug);
+      pub_cost.publish(msg_cost);
+    }
+  }
 }
 
 int main(int argc, char **argv)
