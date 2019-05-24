@@ -44,8 +44,8 @@ int main(int argc, char **argv)
     [&](const sensor_msgs::Image& msg){
       std::cout<<"aaa"<<std::endl;
     };
-  ros::Publisher pub = n.advertise<sensor_msgs::Image>("/debug_image", 1000);
-  ros::Subscriber sub = n.subscribe<sensor_msgs::Image>("/kinect_head/rgb/image_raw", 1000, gen_callback(pub));
+  ros::Publisher pub = n.advertise<sensor_msgs::Image>("/debug_image", 1);
+  ros::Subscriber sub = n.subscribe<sensor_msgs::Image>("/kinect_head/rgb/image_raw", 1, gen_callback(pub));
   ros::spin();
   return 0;
 }
