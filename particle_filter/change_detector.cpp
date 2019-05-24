@@ -30,6 +30,7 @@ public:
     ChangeDetector();
 
 private:
+    void init_common();
     void callback(const sensor_msgs::Image& msg);
     bool req_handler(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
 };
@@ -41,6 +42,11 @@ ChangeDetector::ChangeDetector(){
   pub_image = nh.advertise<sensor_msgs::Image>("/debug_image", 1);
   sub_image = nh.subscribe("/kinect_head/rgb/image_raw", 1, &ChangeDetector::callback, this);
   service_init = nh.advertiseService("trigger_change_detector_init", &ChangeDetector::req_handler, this);
+  init_common();
+}
+
+void ChangeDetector::init_common()
+{
   isInit_ref_image = true;
   isInit_ref_cost = true;
   isInit_cost_pre = true;
@@ -49,12 +55,8 @@ ChangeDetector::ChangeDetector(){
 
 bool ChangeDetector::req_handler(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
 {
-  //TODO
   ROS_INFO("received trigger");
-  isInit_ref_image = true;
-  isInit_ref_cost = true;
-  isInit_cost_pre = true;
-  max_cost_diff = 0;
+  init_common();
 }
 
 void ChangeDetector::callback(const sensor_msgs::Image& msg)
