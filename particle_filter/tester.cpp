@@ -12,25 +12,22 @@
 //https://stackoverflow.com/questions/45340189/ros-use-lambda-as-callback-in-nodehandle-subscribe
 
 boost::function<void(const sensor_msgs::Image&)> gen_callback(){
-  cv::Mat img_ref = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
+  cv::Mat img_ref = cv::imread("/home/h-ishida/catkin_ws/src/pr2_send_me_a_flower/particle_filter/image/pre.png", CV_LOAD_IMAGE_COLOR);
 
-  auto cb = [&](const sensor_msgs::Image& img){
+  auto fn_callback = [=](const sensor_msgs::Image& img){
     cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvCopy(img, sensor_msgs::image_encodings::BGR8);
-    int cost = compute_cost(img_ref, cv_ptr->image);
+    auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.8);
+    auto img_filtered_referece = convert_bf(img_ref, predicate);
+    auto img_filtered_received = convert_bf(cv_ptr->image, predicate);
+    int cost = compute_cost(img_filtered_referece, img_filtered_received);
     std::cout<< cost <<std::endl;
   };
 
-  return cb;
+  return fn_callback;
 }
 
 int main(int argc, char **argv)
 { 
-  auto predicate = gen_hsi_filter(-100.0, 100.0, 0.3, 1.0, 0.5, 0.8);
-  cv::Mat img1 = cv::imread("image/pre.png", CV_LOAD_IMAGE_COLOR);
-  cv::Mat img2 = cv::imread("image/post_with_move.png", CV_LOAD_IMAGE_COLOR);
-  cv::Mat img1_filtered = convert_bf(img1, predicate);
-  cv::Mat img2_filtered = convert_bf(img2, predicate);
-
   ros::init(argc, argv, "tester");
   ros::NodeHandle n;
   boost::function<void(const sensor_msgs::Image&)> callback = 
