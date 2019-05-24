@@ -12,3 +12,4 @@ std::function<bool(cv::Vec3b)> gen_hsi_filter(
     float s_min, float s_max,
     float i_min, float i_max);
 bool isSameSize(const cv::Mat& img1, const cv::Mat& img2);
+cv::Mat diff_image(const cv::Mat& img1, const cv::Mat& img2);

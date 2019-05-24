@@ -56,8 +56,8 @@ int compute_cost(const cv::Mat& img1, const cv::Mat& img2)
 {
   if(!isSameSize(img1, img2)){
     std::cout<<"two images size are different..."<<std::endl;
-    std::cout<<"img1:"<< img1.cols << std::endl;
-    std::cout<<"img2:"<< img2.cols << std::endl;
+    std::cout<<"img1:"<< img1.cols << " " << img1.rows << std::endl;
+    std::cout<<"img2:"<< img2.cols << " " << img2.rows << std::endl;
   }
   int cost = 0;
   for (int i = 0; i < img1.rows; i++){
@@ -77,7 +77,18 @@ bool isSameSize(const cv::Mat& img1, const cv::Mat& img2)
   return true;
 }
 
-
-
-
+cv::Mat diff_image(const cv::Mat& img1, const cv::Mat& img2)//tmp
+{
+  cv::Mat img_diff(img1.rows, img1.cols, CV_8UC3); // CV_8UC3 really?
+  for (int i = 0; i < img1.rows; i++){
+    for (int j = 0; j < img1.cols; j++){
+      auto bgr1 = img1.at<cv::Vec3b>(i, j);
+      auto bgr2 = img2.at<cv::Vec3b>(i, j);
+      auto bgr_white = cv::Vec3b(255, 255, 255);
+      auto bgr_black = cv::Vec3b(0, 0, 0);
+      img_diff.at<cv::Vec3b>(i, j) = cv::sum(bgr1) == cv::sum(bgr2) ? bgr_white : bgr_black;
+    }
+  }
+  return img_diff;
+}
 
