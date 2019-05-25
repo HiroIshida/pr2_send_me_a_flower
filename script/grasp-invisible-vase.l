@@ -7,7 +7,7 @@
 (load "util-motion.l")
 (load "util-ros.l")
 (load "ishida-pr2-init.l")
-(unix:sleep 8)
+(unix:sleep 12)
 ;(speak-en "start")
 
 (ros::roseus "trigger_test" :anonymous t)
@@ -30,7 +30,7 @@
         ))
 
 
-(setq pos-rarm (v+ pos-flower #f(0 -150 20)))
+(setq pos-rarm (v+ pos-flower #f(0 -120 20)))
 
 ; leave for once
 (solve-ik! *robot* pos-rarm #f(1.57 1.57 0) :rarm :rotation-axis t)
@@ -51,25 +51,26 @@
 (setq *isMoved* nil)
 (defun callback_cost (msg_cost)
   (let ((cost (send msg_cost :data)))
-    (if (> cost 2000)
+    (if (> cost 700)
         (setq *isMoved* t))))
 
-(ros::subscribe "/max_cost_diff" std_msgs::Int64 #'callback_cost)
+(ros::subscribe "/cost" std_msgs::Int64 #'callback_cost)
 
 
-(ros::rate 10)                                                                              
+(ros::rate 30)                                                                              
 (do-until-key                                                                              
   (ros::spin-once)                                                                          
   (when *isMoved*                                                                              
     ;(send *ri* :cancel-angle-vector)                                                        
+    (speak-jp "衝突しました")
     (return))
-  (setq pos-rarm (v+ pos-rarm #f(0 3 0)))
+  (setq pos-rarm (v+ pos-rarm #f(0 5 0)))
   (solve-ik! *robot* pos-rarm #f(1.57 0.3 0) :rarm :rotation-axis t)
   (show *robot*)
-  (send *ri* :angle-vector (send *robot* :angle-vector) 1000)
-  (unix::usleep (* 700 1000))
+  (send *ri* :angle-vector (send *robot* :angle-vector) 2000)
+  (send *ri* :wait-interpolation)
+  ;;(unix::usleep (* 700 1000))
   ;;(send *ri* :wait-interpolation)
 )
 
-(speak-jp "衝突しました")
 
