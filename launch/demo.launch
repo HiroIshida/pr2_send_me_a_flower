@@ -4,7 +4,7 @@
 
   <!-- parameter-->
   <arg name="pr2" default="true"/>
-  <arg name="debug" default="false"/>
+  <arg name="debug" default="true"/>
 
   <!-- nodelet or standalone -->
   <arg name="nodelet_arg1" default="standalone" if="$(arg debug)"/>
@@ -46,7 +46,7 @@
   <node name="pr2_send_flower_rviz" pkg="rviz" type="rviz"
     args="-d $(find pr2_send_flower)/config/pr2_moveit.rviz"/>
   <!-- launch moveit -->
-  <include file="$(find pr2_moveit_config)/launch/move_group.launch"/>
+  <!--include file="$(find pr2_moveit_config)/launch/move_group.launch"/-->
 
   <!-- tabletop object detection -->
   <group ns="core">

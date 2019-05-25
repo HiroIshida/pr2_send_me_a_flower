@@ -203,11 +203,13 @@ catkin_package(
 # endif()
 
 #pkg-config --cflags opencv` `pkg-config --libs opencv
+set (CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}})
 add_library(${PROJECT_NAME} particle_filter/image_dif.cpp)
 #add_library(mylib STATIC /particle_filter/image_dif.cpp)
 add_executable(tester particle_filter/tester.cpp particle_filter/image_dif.cpp)
-add_executable(change_detector particle_filter/change_detector.cpp particle_filter/image_dif.cpp)
+add_executable(change_detector particle_filter/change_detector2.cpp particle_filter/image_dif.cpp)
 target_link_libraries(tester ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 target_link_libraries(change_detector ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_definitions(-std=c++11)
