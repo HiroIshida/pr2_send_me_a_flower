@@ -143,6 +143,9 @@
     <remap from="~debug_output" to="debug_output" />
     <remap from="~boxes" to="boxes" />
     <rosparam>
+        align_boxes: True
+        align_boxes_with_plane: False
+        target_frame_id: base_link
     </rosparam>
   </node>
 
