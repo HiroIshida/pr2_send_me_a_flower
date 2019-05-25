@@ -8,6 +8,7 @@ project(pr2_send_flower)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED)
+find_package(jsk_recognition_msgs REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -62,6 +63,7 @@ find_package(OpenCV REQUIRED)
 add_service_files(
    FILES
    ReachPoint.srv
+   BoxArray.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -76,6 +78,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs  # Or other packages containing msgs
   geometry_msgs
+  jsk_recognition_msgs
 )
 
 ################################################
@@ -110,7 +113,7 @@ generate_messages(
 catkin_package(
   #INCLUDE_DIRS include
 #  LIBRARIES pr2_send_flower
-  CATKIN_DEPENDS rospy std_msgs geometry_msgs
+  CATKIN_DEPENDS rospy std_msgs geometry_msgs jsk_recognition_msgs
   DEPENDS OpenCV
 #  DEPENDS system_lib
 
