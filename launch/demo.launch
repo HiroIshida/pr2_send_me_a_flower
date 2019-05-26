@@ -143,6 +143,9 @@
     <remap from="~debug_output" to="debug_output" />
     <remap from="~boxes" to="boxes" />
     <rosparam>
+        align_boxes: True
+        align_boxes_with_plane: False
+        target_frame_id: base_link
     </rosparam>
   </node>
 
@@ -162,6 +165,7 @@
   <node pkg="pr2_send_flower" type="table_detector.py" name="table_detector" output="screen"/>
   <node pkg="pr2_send_flower" type="choose_highest_box.py" name="choose_highest_box" output="screen"/>
   <node pkg="pr2_send_flower" type="vase_reach_point.py" name="vase_detector" output="screen"/>
+  <node pkg="pr2_send_flower" type="choose_one_box.py" name="choose_one_box" output="screen"/>
   <node pkg="pr2_send_flower" type="change_detector" name="change_detector" output="screen"/>
 
   <node pkg="image_view" type="image_view" name="debug_image_viewer">
